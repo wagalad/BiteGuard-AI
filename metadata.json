@@ -1,0 +1,7 @@
+{
+  "name": "BiteGuard AI",
+  "description": "An AI-powered assistant for identifying bug and animal bites using Teachable Machine.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
