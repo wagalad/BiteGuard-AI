@@ -1,7 +1,9 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
+import { ArchitectureDiagram } from './components/ArchitectureDiagram';
 import { loadModel, predictImage } from './services/tmService';
 import { LoadingStatus, Prediction } from './types';
 import { Loader2, Search, Sparkles } from 'lucide-react';
@@ -144,6 +146,9 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Architecture Diagram Section */}
+        <ArchitectureDiagram />
       </div>
       <style>{`
         .fill-mode-backwards { animation-fill-mode: backwards; }
