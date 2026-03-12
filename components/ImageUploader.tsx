@@ -114,7 +114,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
       ) : previewUrl ? (
         <div className="relative rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-800 shadow-inner border border-slate-200 dark:border-slate-700 group transition-colors duration-300">
           <div className="absolute inset-0 bg-slate-200/50 dark:bg-slate-900/50" /> {/* Backdrop */}
-          <img src={previewUrl} alt="Bite Preview" className="relative z-10 w-full h-64 md:h-96 object-contain mx-auto mix-blend-multiply dark:mix-blend-normal" />
+          <img src={previewUrl} alt="Bite Preview" className="relative z-10 w-full h-64 md:h-96 object-contain mx-auto" />
           
           {!isAnalyzing && (
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-20 flex items-start justify-end p-4">

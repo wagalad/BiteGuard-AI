@@ -9,26 +9,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check initial preference
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
-    }
+    const isCurrentlyDark = document.documentElement.classList.contains('dark');
+    setIsDark(isCurrentlyDark);
   }, []);
 
   const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-      setIsDark(true);
-    }
+    setIsDark((prev) => {
+      const next = !prev;
+      if (next) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+      return next;
+    });
   };
 
   return (
@@ -88,7 +84,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
             <p>&copy; {new Date().getFullYear()} BiteGuard AI. All rights reserved.</p>
             <p className="flex items-center gap-1.5">
-              Powered by <span className="font-semibold text-slate-600 dark:text-slate-400">Teachable Machine</span>
+              Built by <span className="font-semibold text-slate-600 dark:text-slate-400">Raghav Kilambi</span>
             </p>
           </div>
         </div>
