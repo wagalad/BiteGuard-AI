@@ -1,21 +1,18 @@
+import * as tmImage from '@teachablemachine/image';
 import { MODEL_URL } from '../constants';
 
-let model: any = null;
+let model: tmImage.CustomMobileNet | null = null;
 
 export const loadModel = async (): Promise<void> => {
   if (model) return;
   
-  if (!window.tmImage) {
-    throw new Error("Teachable Machine library not loaded");
-  }
-
   // Ensure trailing slash for consistent file path construction to find metadata.json correctly
   const baseURL = MODEL_URL.endsWith('/') ? MODEL_URL : `${MODEL_URL}/`;
   const modelURL = `${baseURL}model.json`;
   const metadataURL = `${baseURL}metadata.json`;
 
   try {
-    model = await window.tmImage.load(modelURL, metadataURL);
+    model = await tmImage.load(modelURL, metadataURL);
     console.log("Model loaded successfully");
   } catch (error) {
     console.error("Failed to load model:", error);
