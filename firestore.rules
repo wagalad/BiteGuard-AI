@@ -32,13 +32,13 @@ service cloud.firestore {
     }
 
     function isValidScan(data) {
-      return data.keys().hasAll(['userId', 'timestamp', 'analysis', 'imageData']) &&
+      return data.keys().hasAll(['userId', 'timestamp', 'analysis', 'image']) &&
              data.userId == request.auth.uid &&
              data.analysis is map &&
              data.analysis.name is string &&
              data.analysis.severity in ['low', 'medium', 'high'] &&
-             data.imageData is string &&
-             data.imageData.size() < 10000000; // ~10MB limit for base64
+             data.image is string &&
+             data.image.size() < 10000000; // ~10MB limit for base64
     }
 
     function isAdmin() {
