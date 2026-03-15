@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
+import * as tmImage from '@teachablemachine/image';
 import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
@@ -7,6 +8,7 @@ import { LoadingStatus, GeminiAnalysis } from './types';
 import { Loader2, Search, Sparkles, BookOpen, Lock, LogIn } from 'lucide-react';
 import { auth, signInWithGoogle, saveScan, getUserScans } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { MODEL_URL, BITE_DATABASE, FALLBACK_INFO } from './constants';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<LoadingStatus>('idle');
@@ -17,6 +19,7 @@ const App: React.FC = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [history, setHistory] = useState<any[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -26,6 +29,20 @@ const App: React.FC = () => {
         loadHistory(currentUser.uid);
       }
     });
+
+    // Load Teachable Machine model on mount
+    const loadModel = async () => {
+      try {
+        const checkpointURL = MODEL_URL + "model.json";
+        const metadataURL = MODEL_URL + "metadata.json";
+        const loadedModel = await tmImage.load(checkpointURL, metadataURL);
+        setModel(loadedModel);
+      } catch (err) {
+        console.error("Failed to load Teachable Machine model", err);
+      }
+    };
+    loadModel();
+
     return () => unsubscribe();
   }, []);
 
@@ -49,42 +66,36 @@ const App: React.FC = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!imageSrc) return;
+    if (!imageSrc || !model) return;
     
     setStatus('analyzing');
     setErrorMessage(null);
 
     try {
-      // Get Firebase ID Token if user is logged in
-      let idToken = null;
-      if (user) {
-        idToken = await user.getIdToken();
-      }
-
-      // Convert data URL to Blob
-      const response = await fetch(imageSrc);
-      const blob = await response.blob();
+      // Create a temporary image element to run prediction on
+      const img = new Image();
+      img.src = imageSrc;
       
-      const formData = new FormData();
-      formData.append('image', blob, 'upload.jpg');
-
-      const headers: Record<string, string> = {};
-      if (idToken) {
-        headers['Authorization'] = `Bearer ${idToken}`;
-      }
-
-      const apiResponse = await fetch('/api/analyze', {
-        method: 'POST',
-        headers,
-        body: formData,
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
       });
 
-      if (!apiResponse.ok) {
-        const errorData = await apiResponse.json();
-        throw new Error(errorData.error || 'Analysis failed');
-      }
+      const predictions = await model.predict(img);
+      
+      // Sort by probability and get the top one
+      const topResult = predictions.sort((a, b) => b.probability - a.probability)[0];
+      
+      // Map the label to our database
+      const label = topResult.className.toLowerCase();
+      const biteInfo = BITE_DATABASE[label] || FALLBACK_INFO;
 
-      const result = await apiResponse.json();
+      const result: GeminiAnalysis = {
+        ...biteInfo,
+        confidence: topResult.probability,
+        disclaimer: "This assessment is powered by a Teachable Machine model and is for educational purposes only. Always consult a healthcare professional."
+      };
+
       setAnalysis(result);
       setStatus('success');
 
@@ -180,7 +191,7 @@ const App: React.FC = () => {
                       {status === 'analyzing' ? (
                         <>
                           <Loader2 className="animate-spin" />
-                          Analyzing with Gemini...
+                          Analyzing with AI...
                         </>
                       ) : (
                         <>
@@ -273,22 +284,45 @@ const App: React.FC = () => {
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg">
               <BookOpen size={20} />
             </div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Data Sources & Citations</h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">Information & Sources</h3>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">Medical References</h4>
+              <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">Medical & Entomological References</h4>
               <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-                <li className="italic">Centers for Disease Control and Prevention (CDC). (2024). "Insects and Scorpions." U.S. Department of Health and Human Services.</li>
-                <li className="italic">Mayo Clinic Staff. (2023). "Insect bites and stings: First aid." Mayo Foundation for Medical Education and Research.</li>
-                <li className="italic">World Health Organization (WHO). (2022). "Vector-borne diseases." Fact sheets.</li>
+                <li className="italic">
+                  Centers for Disease Control and Prevention (CDC). (2024). "Insects and Scorpions." U.S. Department of Health and Human Services. 
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
+                <li className="italic">
+                  Mayo Clinic Staff. (2023). "Insect bites and stings: First aid." Mayo Foundation for Medical Education and Research.
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
+                <li className="italic">
+                  World Health Organization (WHO). (2022). "Vector-borne diseases." Fact sheets.
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
+                <li className="italic">
+                  Entomological Society of America. (2023). "Common Names of Insects and Related Organisms."
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">AI & Technology</h4>
+              <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm uppercase tracking-wider">AI & Technology Datasets</h4>
               <ul className="space-y-3 text-sm text-slate-500 dark:text-slate-400">
-                <li>Google DeepMind. (2024). "Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context." Technical Report.</li>
-                <li>TensorFlow.js Team. (2024). "Real-time Machine Learning in the Browser." Google Open Source.</li>
+                <li>
+                  Google Teachable Machine. (2024). "Train a machine learning model for your site."
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
+                <li>
+                  TensorFlow.js Team. (2024). "Real-time Machine Learning in the Browser." Google Open Source.
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
+                <li>
+                  DermNet NZ. (2024). "Dermatology Image Library for Educational Use."
+                  <a href="#" className="ml-1 text-medical-600 hover:underline">[Link]</a>
+                </li>
               </ul>
             </div>
           </div>

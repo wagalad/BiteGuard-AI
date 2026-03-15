@@ -4,11 +4,15 @@ service cloud.firestore {
     // ===============================================================
     // Assumed Data Model
     // ===============================================================
-    // Collection: users
-    // Fields: uid, email, displayName, photoURL, createdAt
     //
     // Collection: scans
-    // Fields: userId, timestamp, imageData, analysis (name, severity, confidence, etc.)
+    // Document ID: Auto-generated
+    // Fields:
+    //   - userId: string (required) - The UID of the owner
+    //   - image: string (required) - Base64 image data
+    //   - analysis: map (required) - The Gemini analysis result
+    //   - timestamp: timestamp (required) - Server timestamp
+    //
     // ===============================================================
 
     // Helper Functions
@@ -20,49 +24,36 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isDocOwner() {
-      return isAuthenticated() && request.auth.uid == resource.data.userId;
-    }
-
-    function isValidUser(data) {
-      return data.keys().hasAll(['uid', 'email']) &&
-             data.uid == request.auth.uid &&
-             data.email is string &&
-             data.email.size() < 256;
-    }
-
     function isValidScan(data) {
-      return data.keys().hasAll(['userId', 'timestamp', 'analysis', 'image']) &&
-             data.userId == request.auth.uid &&
-             data.analysis is map &&
-             data.analysis.name is string &&
-             data.analysis.severity in ['low', 'medium', 'high'] &&
+      return data.keys().hasAll(['userId', 'image', 'analysis', 'timestamp']) &&
+             data.userId is string &&
              data.image is string &&
-             data.image.size() < 10000000; // ~10MB limit for base64
-    }
-
-    function isAdmin() {
-      return isAuthenticated() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-      // To bootstrap the first admin, manually set the 'role' field to 'admin' 
-      // for your user document in the Firebase Console.
-    }
-
-    // Rules
-    match /users/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId) && isValidUser(request.resource.data);
-      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+             data.image.size() < 10485760 && // Limit image size in rules (approx 10MB)
+             data.analysis is map &&
+             data.timestamp is timestamp;
     }
 
     match /scans/{scanId} {
-      allow read: if isDocOwner() || isAdmin();
-      allow create: if isAuthenticated() && isValidScan(request.resource.data);
-      allow delete: if isDocOwner() || isAdmin();
+      // Users can only read their own scans
+      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      
+      // Users can only create scans for themselves
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      isValidScan(request.resource.data);
+      
+      // Scans are typically immutable in this app, but if we allow updates:
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid &&
+                      request.resource.data.userId == request.auth.uid &&
+                      isValidScan(request.resource.data);
+      
+      // Users can delete their own scans
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // Default deny
-    match /{document=**} {
+    match /{path=**} {
       allow read, write: if false;
     }
   }
