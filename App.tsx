@@ -6,8 +6,9 @@ import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
 import { LoadingStatus, GeminiAnalysis } from './types';
 import { Loader2, Search, Sparkles, BookOpen, Lock, LogIn, BrainCircuit } from 'lucide-react';
-import { auth, signInWithGoogle, saveScan, getUserScans } from './firebase';
+import { auth, signInWithGoogle, saveScan, getUserScans, db } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { doc, getDocFromServer } from 'firebase/firestore';
 import { MODEL_URL, BITE_DATABASE, FALLBACK_INFO } from './constants';
 import { getGeminiAnalysis } from './services/geminiService';
 import ReactMarkdown from 'react-markdown';
@@ -24,19 +25,25 @@ const App: React.FC = () => {
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
 
   useEffect(() => {
-    let unsubscribe = () => {};
-
-    if (auth) {
-      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
-        setIsAuthLoading(false);
-        if (currentUser) {
-          loadHistory(currentUser.uid);
+    // Test Firestore connection
+    const testConnection = async () => {
+      try {
+        await getDocFromServer(doc(db, 'test', 'connection'));
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('the client is offline')) {
+          console.error("Please check your Firebase configuration. The client is offline.");
         }
-      });
-    } else {
+      }
+    };
+    testConnection();
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setIsAuthLoading(false);
-    }
+      if (currentUser) {
+        loadHistory(currentUser.uid);
+      }
+    });
 
     // Load Teachable Machine model on mount
     const loadModel = async () => {

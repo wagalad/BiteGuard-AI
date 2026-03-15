@@ -3,38 +3,73 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
 
-// Load Firebase config from environment variable injected by Vite
-const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG || {};
+// Import the Firebase configuration
+import firebaseConfig from './firebase-applet-config.json';
 
-// Initialize Firebase with a check for required fields
+// Initialize Firebase SDK
 function initializeFirebase() {
   if (getApps().length > 0) return getApp();
-  
-  // Check if we have a valid config
-  if (!firebaseConfig.apiKey) {
-    console.warn("Firebase configuration is missing or incomplete. Some features will be disabled.");
-    return null;
-  }
-  
-  try {
-    return initializeApp(firebaseConfig);
-  } catch (error) {
-    console.error("Failed to initialize Firebase:", error);
-    return null;
-  }
+  return initializeApp(firebaseConfig);
 }
 
 const app = initializeFirebase();
 
-export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : null;
+export const auth = getAuth(app);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const googleProvider = new GoogleAuthProvider();
 
-export const signInWithGoogle = async () => {
-  if (!auth) {
-    alert("Authentication is not configured. Please check your Firebase settings.");
-    return null;
+export enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
   }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
+export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
@@ -49,15 +84,12 @@ export const signInWithGoogle = async () => {
   }
 };
 
-export const logout = () => auth && signOut(auth);
+export const logout = () => signOut(auth);
 
 export const saveScan = async (userId: string, image: string, analysis: GeminiAnalysis) => {
-  if (!db) {
-    console.error("Database is not configured.");
-    return null;
-  }
+  const path = 'scans';
   try {
-    const docRef = await addDoc(collection(db, 'scans'), {
+    const docRef = await addDoc(collection(db, path), {
       userId,
       image,
       analysis,
@@ -65,19 +97,15 @@ export const saveScan = async (userId: string, image: string, analysis: GeminiAn
     });
     return docRef.id;
   } catch (error) {
-    console.error("Error saving scan", error);
-    throw error;
+    handleFirestoreError(error, OperationType.CREATE, path);
   }
 };
 
 export const getUserScans = async (userId: string) => {
-  if (!db) {
-    console.error("Database is not configured.");
-    return [];
-  }
+  const path = 'scans';
   try {
     const q = query(
-      collection(db, 'scans'),
+      collection(db, path),
       where('userId', '==', userId),
       orderBy('timestamp', 'desc')
     );
@@ -87,7 +115,6 @@ export const getUserScans = async (userId: string) => {
       ...doc.data()
     }));
   } catch (error) {
-    console.error("Error getting scans", error);
-    throw error;
+    handleFirestoreError(error, OperationType.LIST, path);
   }
 };

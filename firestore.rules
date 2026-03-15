@@ -13,6 +13,12 @@ service cloud.firestore {
     //   - analysis: map (required) - The Gemini analysis result
     //   - timestamp: timestamp (required) - Server timestamp
     //
+    // Collection: users
+    // Document ID: userId
+    // Fields:
+    //   - role: string (required) - 'admin' or 'user'
+    //   - email: string (required)
+    //
     // ===============================================================
 
     // Helper Functions
@@ -22,6 +28,13 @@ service cloud.firestore {
 
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "raghav.kilambi@gmail.com" && request.auth.token.email_verified == true));
     }
 
     function isRecent(time) {
@@ -43,8 +56,8 @@ service cloud.firestore {
     }
 
     match /scans/{scanId} {
-      // Users can only read their own scans
-      allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
+      // Users can only read their own scans, admins can read all
+      allow read: if isAuthenticated() && (isAdmin() || (resource == null || resource.data.userId == request.auth.uid));
       
       // Users can only create scans for themselves
       allow create: if isAuthenticated() && isValidScan(request.resource.data);
@@ -53,7 +66,14 @@ service cloud.firestore {
       allow update: if false;
       
       // Users can delete their own scans
-      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      // Only admins can create/update roles, except for initial user creation which defaults to 'user'
+      allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.role == 'user';
+      allow update: if isAuthenticated() && isAdmin();
     }
 
     // Default deny

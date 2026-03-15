@@ -15,12 +15,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     const isCurrentlyDark = document.documentElement.classList.contains('dark');
     setIsDark(isCurrentlyDark);
 
-    let unsubscribe = () => {};
-    if (auth) {
-      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-        setUser(currentUser);
-      });
-    }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
 
     return () => unsubscribe();
   }, []);
