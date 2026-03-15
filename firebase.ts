@@ -1,12 +1,25 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
-import firebaseConfig from './firebase-applet-config.json';
 import { GeminiAnalysis } from './types';
+
+// Firebase configuration is injected via Vite's define or environment variables
+const config = (import.meta as any).env.VITE_FIREBASE_CONFIG || {};
+
+const firebaseConfig = {
+  apiKey: config.apiKey || import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: config.authDomain || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: config.projectId || import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: config.storageBucket || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: config.messagingSenderId || import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: config.appId || import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+const firestoreDatabaseId = config.firestoreDatabaseId || import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID;
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app, firestoreDatabaseId);
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {

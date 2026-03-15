@@ -22,8 +22,12 @@ if (fs.existsSync(firebaseConfigPath)) {
   admin.initializeApp({
     projectId: firebaseConfig.projectId,
   });
+} else if (process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID) {
+  admin.initializeApp({
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+  });
 } else {
-  console.warn("firebase-applet-config.json not found. Firebase Admin might not be initialized correctly.");
+  console.warn("Firebase configuration not found. Firebase Admin might not be initialized correctly.");
 }
 
 const app = express();

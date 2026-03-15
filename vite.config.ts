@@ -2,9 +2,22 @@ import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import fs from 'fs';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
+    
+    // Load Firebase config from JSON if it exists
+    let firebaseConfig = {};
+    const configPath = path.resolve(__dirname, 'firebase-applet-config.json');
+    if (fs.existsSync(configPath)) {
+      try {
+        firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      } catch (e) {
+        console.error('Error parsing firebase-applet-config.json', e);
+      }
+    }
+
     return {
       server: {
         port: 3000,
@@ -16,7 +29,9 @@ export default defineConfig(({ mode }) => {
       ],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        // Inject Firebase config for client-side use
+        'import.meta.env.VITE_FIREBASE_CONFIG': JSON.stringify(firebaseConfig),
       },
       resolve: {
         alias: {
