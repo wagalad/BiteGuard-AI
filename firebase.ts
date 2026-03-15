@@ -2,7 +2,9 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
-import firebaseConfig from './firebase-applet-config.json';
+
+// Load Firebase config from environment variable injected by Vite
+const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG || {};
 
 // Initialize Firebase
 function initializeFirebase() {
