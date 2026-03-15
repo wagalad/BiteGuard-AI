@@ -20,6 +20,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
   };
 
   const processFile = (file: File) => {
+    // Validation
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Invalid file type. Please upload a JPG, PNG, or WebP image.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File too large. Maximum size is 5MB.");
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;

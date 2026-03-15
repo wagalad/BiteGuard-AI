@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Activity, ShieldCheck, Sun, Moon, LogIn, LogOut, User } from 'lucide-react';
+import { auth, signInWithGoogle, logout } from '../firebase';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,10 +9,17 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
 
   useEffect(() => {
     const isCurrentlyDark = document.documentElement.classList.contains('dark');
     setIsDark(isCurrentlyDark);
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const toggleTheme = () => {
@@ -52,6 +61,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <ShieldCheck size={14} />
               <span>Secure & Private Analysis</span>
             </div>
+            
             <button 
               onClick={toggleTheme}
               className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-medical-400/50"
@@ -59,6 +69,35 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               {isDark ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} />}
             </button>
+
+            {user ? (
+              <div className="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-800">
+                <div className="hidden md:block text-right">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">{user.displayName}</p>
+                  <button 
+                    onClick={logout}
+                    className="text-[10px] text-slate-500 hover:text-red-500 transition-colors uppercase tracking-widest font-bold"
+                  >
+                    Logout
+                  </button>
+                </div>
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="profile" className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
+                    <User size={16} />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button 
+                onClick={signInWithGoogle}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
+              >
+                <LogIn size={16} />
+                <span>Sign In</span>
+              </button>
+            )}
           </div>
         </div>
       </header>

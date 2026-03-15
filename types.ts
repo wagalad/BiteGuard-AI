@@ -11,4 +11,9 @@ export interface BiteInfo {
   severity: 'low' | 'medium' | 'high';
 }
 
+export interface GeminiAnalysis extends BiteInfo {
+  confidence: number;
+  disclaimer: string;
+}
+
 export type LoadingStatus = 'idle' | 'loading' | 'analyzing' | 'success' | 'error';
