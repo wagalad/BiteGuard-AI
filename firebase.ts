@@ -3,12 +3,34 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
 
-// Import the Firebase configuration
-import firebaseConfig from './firebase-applet-config.json';
+// Fallback configuration for deployment environments where the JSON file might be missing
+// These should be set in environment variables (e.g., in Vercel)
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || "(default)"
+};
+
+// Try to load from the injected config if available
+try {
+  const injectedConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG || '{}');
+  if (injectedConfig.apiKey) {
+    Object.assign(firebaseConfig, injectedConfig);
+  }
+} catch (e) {
+  console.warn("Could not parse VITE_FIREBASE_CONFIG", e);
+}
 
 // Initialize Firebase SDK
 function initializeFirebase() {
   if (getApps().length > 0) return getApp();
+  if (!firebaseConfig.apiKey) {
+    console.warn("Firebase API Key is missing. Check your environment variables.");
+  }
   return initializeApp(firebaseConfig);
 }
 
