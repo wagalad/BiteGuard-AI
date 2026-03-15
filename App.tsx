@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
-import { ArchitectureDiagram } from './components/ArchitectureDiagram';
 import { LoadingStatus, GeminiAnalysis } from './types';
 import { Loader2, Search, Sparkles, BookOpen, Lock, LogIn } from 'lucide-react';
 import { auth, signInWithGoogle, saveScan, getUserScans } from './firebase';
@@ -298,9 +297,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Architecture Diagram Section */}
-        <ArchitectureDiagram />
-      </div>
+        </div>
       <style>{`
         .fill-mode-backwards { animation-fill-mode: backwards; }
       `}</style>
