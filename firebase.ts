@@ -4,6 +4,9 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderB
 import { GeminiAnalysis } from './types';
 import firebaseConfig from './firebase-applet-config.json';
 
+// Use firebase-applet-config.json as the source of truth for AI Studio.
+// For Vercel, you should set these as environment variables, but for now 
+// we'll ensure the app starts correctly in this environment.
 const firestoreDatabaseId = firebaseConfig.firestoreDatabaseId || "(default)";
 
 let app;
@@ -11,7 +14,7 @@ try {
   app = initializeApp(firebaseConfig);
 } catch (e) {
   console.error("Firebase initialization failed", e);
-  // Create a dummy app to prevent crashes, though features won't work
+  // Create a dummy app to prevent crashes
   app = initializeApp({ apiKey: "dummy", projectId: "dummy", appId: "dummy" });
 }
 
@@ -36,17 +39,17 @@ export const signInWithGoogle = async () => {
 
 export const logout = () => signOut(auth);
 
-export const saveScan = async (userId: string, imageData: string, analysis: GeminiAnalysis) => {
+export const saveScan = async (userId: string, image: string, analysis: GeminiAnalysis) => {
   try {
     const docRef = await addDoc(collection(db, 'scans'), {
       userId,
-      imageData,
+      image,
       analysis,
       timestamp: serverTimestamp(),
     });
     return docRef.id;
   } catch (error) {
-    console.error("Error saving scan to Firestore", error);
+    console.error("Error saving scan", error);
     throw error;
   }
 };
@@ -64,7 +67,7 @@ export const getUserScans = async (userId: string) => {
       ...doc.data()
     }));
   } catch (error) {
-    console.error("Error fetching user scans", error);
+    console.error("Error getting scans", error);
     throw error;
   }
 };
