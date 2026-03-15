@@ -24,13 +24,19 @@ const App: React.FC = () => {
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    let unsubscribe = () => {};
+
+    if (auth) {
+      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+        setIsAuthLoading(false);
+        if (currentUser) {
+          loadHistory(currentUser.uid);
+        }
+      });
+    } else {
       setIsAuthLoading(false);
-      if (currentUser) {
-        loadHistory(currentUser.uid);
-      }
-    });
+    }
 
     // Load Teachable Machine model on mount
     const loadModel = async () => {

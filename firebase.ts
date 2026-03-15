@@ -6,19 +6,35 @@ import { GeminiAnalysis } from './types';
 // Load Firebase config from environment variable injected by Vite
 const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG || {};
 
-// Initialize Firebase
+// Initialize Firebase with a check for required fields
 function initializeFirebase() {
   if (getApps().length > 0) return getApp();
-  return initializeApp(firebaseConfig);
+  
+  // Check if we have a valid config
+  if (!firebaseConfig.apiKey) {
+    console.warn("Firebase configuration is missing or incomplete. Some features will be disabled.");
+    return null;
+  }
+  
+  try {
+    return initializeApp(firebaseConfig);
+  } catch (error) {
+    console.error("Failed to initialize Firebase:", error);
+    return null;
+  }
 }
 
 const app = initializeFirebase();
 
-export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : null;
 export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
+  if (!auth) {
+    alert("Authentication is not configured. Please check your Firebase settings.");
+    return null;
+  }
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
@@ -33,9 +49,13 @@ export const signInWithGoogle = async () => {
   }
 };
 
-export const logout = () => signOut(auth);
+export const logout = () => auth && signOut(auth);
 
 export const saveScan = async (userId: string, image: string, analysis: GeminiAnalysis) => {
+  if (!db) {
+    console.error("Database is not configured.");
+    return null;
+  }
   try {
     const docRef = await addDoc(collection(db, 'scans'), {
       userId,
@@ -51,6 +71,10 @@ export const saveScan = async (userId: string, image: string, analysis: GeminiAn
 };
 
 export const getUserScans = async (userId: string) => {
+  if (!db) {
+    console.error("Database is not configured.");
+    return [];
+  }
   try {
     const q = query(
       collection(db, 'scans'),
