@@ -91,7 +91,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             ) : (
               <button 
-                onClick={signInWithGoogle}
+                onClick={async () => {
+                  try {
+                    await signInWithGoogle();
+                  } catch (error: any) {
+                    if (error.code === 'auth/unauthorized-domain') {
+                      alert("This domain is not authorized in Firebase. Please add " + window.location.hostname + " to your authorized domains in the Firebase Console.");
+                    } else if (error.code === 'auth/popup-closed-by-user') {
+                      // Silently ignore or show a small toast
+                    } else {
+                      alert("Sign in failed: " + error.message);
+                    }
+                  }
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
               >
                 <LogIn size={16} />
