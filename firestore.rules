@@ -24,13 +24,22 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isRecent(time) {
+      return time > request.time - duration.value(5, 'm') &&
+             time <= request.time;
+    }
+
     function isValidScan(data) {
-      return data.keys().hasAll(['userId', 'image', 'analysis', 'timestamp']) &&
-             data.userId is string &&
+      let allowedFields = ['userId', 'image', 'analysis', 'timestamp'];
+      return data.keys().hasOnly(allowedFields) &&
+             data.keys().hasAll(allowedFields) &&
+             data.userId == request.auth.uid &&
              data.image is string &&
-             data.image.size() < 10485760 && // Limit image size in rules (approx 10MB)
+             data.image.size() > 100 &&
+             data.image.size() < 10485760 &&
              data.analysis is map &&
-             data.timestamp is timestamp;
+             data.timestamp is timestamp &&
+             isRecent(data.timestamp);
     }
 
     match /scans/{scanId} {
@@ -38,15 +47,10 @@ service cloud.firestore {
       allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
       
       // Users can only create scans for themselves
-      allow create: if isAuthenticated() && 
-                      request.resource.data.userId == request.auth.uid &&
-                      isValidScan(request.resource.data);
+      allow create: if isAuthenticated() && isValidScan(request.resource.data);
       
-      // Scans are typically immutable in this app, but if we allow updates:
-      allow update: if isAuthenticated() && 
-                      resource.data.userId == request.auth.uid &&
-                      request.resource.data.userId == request.auth.uid &&
-                      isValidScan(request.resource.data);
+      // Scans are immutable to prevent tampering with history
+      allow update: if false;
       
       // Users can delete their own scans
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;

@@ -5,10 +5,12 @@ import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
 import { LoadingStatus, GeminiAnalysis } from './types';
-import { Loader2, Search, Sparkles, BookOpen, Lock, LogIn } from 'lucide-react';
+import { Loader2, Search, Sparkles, BookOpen, Lock, LogIn, BrainCircuit } from 'lucide-react';
 import { auth, signInWithGoogle, saveScan, getUserScans } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { MODEL_URL, BITE_DATABASE, FALLBACK_INFO } from './constants';
+import { getGeminiAnalysis } from './services/geminiService';
+import ReactMarkdown from 'react-markdown';
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<LoadingStatus>('idle');
@@ -98,6 +100,14 @@ const App: React.FC = () => {
 
       setAnalysis(result);
       setStatus('success');
+
+      // Now fetch Gemini Insight
+      try {
+        const insight = await getGeminiAnalysis(result.name, result.confidence);
+        setAnalysis(prev => prev ? { ...prev, detailedAnalysis: insight } : null);
+      } catch (geminiError) {
+        console.error("Gemini insight failed", geminiError);
+      }
 
       // Save to Firestore only if user is logged in
       if (user) {

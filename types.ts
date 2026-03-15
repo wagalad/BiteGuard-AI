@@ -14,6 +14,7 @@ export interface BiteInfo {
 export interface GeminiAnalysis extends BiteInfo {
   confidence: number;
   disclaimer: string;
+  detailedAnalysis?: string;
 }
 
 export type LoadingStatus = 'idle' | 'loading' | 'analyzing' | 'success' | 'error';
