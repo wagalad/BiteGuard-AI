@@ -4,10 +4,10 @@ import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderB
 import { GeminiAnalysis } from './types';
 
 // Firebase configuration is injected via Vite's define or environment variables
-const config = (import.meta as any).env.VITE_FIREBASE_CONFIG || {};
+const config = (import.meta as any).env?.VITE_FIREBASE_CONFIG || {};
 
 const firebaseConfig = {
-  apiKey: config.apiKey || import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: config.apiKey || import.meta.env.VITE_FIREBASE_API_KEY || "dummy-key",
   authDomain: config.authDomain || import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: config.projectId || import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: config.storageBucket || import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
@@ -15,9 +15,17 @@ const firebaseConfig = {
   appId: config.appId || import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const firestoreDatabaseId = config.firestoreDatabaseId || import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID;
+const firestoreDatabaseId = config.firestoreDatabaseId || import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || "(default)";
 
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (e) {
+  console.error("Firebase initialization failed", e);
+  // Create a dummy app to prevent crashes, though features won't work
+  app = initializeApp({ apiKey: "dummy", projectId: "dummy", appId: "dummy" });
+}
+
 export const auth = getAuth(app);
 export const db = getFirestore(app, firestoreDatabaseId);
 export const googleProvider = new GoogleAuthProvider();
