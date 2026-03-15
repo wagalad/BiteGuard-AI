@@ -1,22 +1,35 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
-import firebaseConfig from './firebase-applet-config.json';
 
-// Use firebase-applet-config.json as the source of truth for AI Studio.
-// For Vercel, you should set these as environment variables, but for now 
-// we'll ensure the app starts correctly in this environment.
-const firestoreDatabaseId = firebaseConfig.firestoreDatabaseId || "(default)";
+// Configuration strategy:
+// Use environment variables (VITE_*) which are set in Vercel or AI Studio Settings.
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
 
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (e) {
-  console.error("Firebase initialization failed", e);
-  // Create a dummy app to prevent crashes
-  app = initializeApp({ apiKey: "dummy", projectId: "dummy", appId: "dummy" });
+const firestoreDatabaseId = import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID || "(default)";
+
+// Initialize Firebase
+function initializeFirebase() {
+  if (getApps().length > 0) return getApp();
+
+  try {
+    return initializeApp(firebaseConfig);
+  } catch (e) {
+    console.error("Firebase initialization failed:", e);
+    // Fallback to dummy to prevent total crash
+    return initializeApp({ apiKey: "dummy", projectId: "dummy", appId: "dummy" });
+  }
 }
+
+const app = initializeFirebase();
 
 export const auth = getAuth(app);
 export const db = getFirestore(app, firestoreDatabaseId);
