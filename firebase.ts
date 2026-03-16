@@ -2,7 +2,33 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
-import firebaseConfig from './firebase-applet-config.json';
+
+// Get Firebase config from injected env (local) or standard env vars (Vercel)
+const getFirebaseConfig = () => {
+  try {
+    const injectedConfig = import.meta.env.VITE_FIREBASE_CONFIG;
+    if (injectedConfig) {
+      const parsedConfig = typeof injectedConfig === 'string' ? JSON.parse(injectedConfig) : injectedConfig;
+      if (Object.keys(parsedConfig).length > 0) {
+        return parsedConfig;
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to parse injected Firebase config", e);
+  }
+  
+  return {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || "(default)"
+  };
+};
+
+const firebaseConfig = getFirebaseConfig();
 
 // Initialize Firebase SDK
 function initializeFirebase() {
