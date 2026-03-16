@@ -34,8 +34,34 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      setPreviewUrl(result);
-      onImageSelected(result);
+      
+      // Resize image to ensure base64 is under 1MB for Firestore
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxDim = 800; // Max dimension to keep size small
+
+        if (width > height && width > maxDim) {
+          height *= maxDim / width;
+          width = maxDim;
+        } else if (height > maxDim) {
+          width *= maxDim / height;
+          height = maxDim;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
+          setPreviewUrl(resizedDataUrl);
+          onImageSelected(resizedDataUrl);
+        }
+      };
+      img.src = result;
     };
     reader.readAsDataURL(file);
   };
@@ -68,12 +94,24 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
   const capturePhoto = () => {
     if (videoRef.current) {
       const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
+      let width = videoRef.current.videoWidth;
+      let height = videoRef.current.videoHeight;
+      const maxDim = 800;
+
+      if (width > height && width > maxDim) {
+        height *= maxDim / width;
+        width = maxDim;
+      } else if (height > maxDim) {
+        width *= maxDim / height;
+        height = maxDim;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const dataUrl = canvas.toDataURL('image/jpeg');
+        ctx.drawImage(videoRef.current, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
         setPreviewUrl(dataUrl);
         onImageSelected(dataUrl);
         stopCamera();

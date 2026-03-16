@@ -1,7 +1,6 @@
 import React from 'react';
 import { GeminiAnalysis } from '../types';
-import { AlertTriangle, Thermometer, Bandage, Stethoscope, CheckCircle2, AlertCircle, BrainCircuit, Sparkles, Loader2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { AlertTriangle, Thermometer, Bandage, Stethoscope, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface ResultsSectionProps {
   analysis: GeminiAnalysis;
@@ -124,41 +123,6 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Gemini Expert Insight Section */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-soft border border-slate-100 dark:border-slate-700 overflow-hidden relative transition-colors duration-300">
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-400 to-violet-600" />
-        
-        <div className="p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl">
-              <BrainCircuit size={24} />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">AI Expert Insight</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Powered by Gemini 3.1 Flash</p>
-            </div>
-          </div>
-
-          {!analysis.detailedAnalysis ? (
-            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-              <Loader2 className="animate-spin text-indigo-500" size={32} />
-              <p className="text-sm text-slate-500 dark:text-slate-400 animate-pulse">Consulting expert database for detailed analysis...</p>
-            </div>
-          ) : (
-            <div className="prose prose-slate dark:prose-invert max-w-none">
-              <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
-                <ReactMarkdown>{analysis.detailedAnalysis}</ReactMarkdown>
-              </div>
-              
-              <div className="mt-6 flex items-center gap-2 text-[10px] font-bold text-indigo-600/60 dark:text-indigo-400/60 uppercase tracking-widest">
-                <Sparkles size={12} />
-                <span>Generated in real-time for your identification</span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
       <style>{`

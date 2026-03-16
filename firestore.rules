@@ -46,14 +46,21 @@ service cloud.firestore {
              time <= request.time;
     }
 
+    function isValidStringList(lst, maxItems, maxStrLen) {
+      return lst is list && lst.size() <= maxItems &&
+             (lst.size() == 0 || (lst[0] is string && lst[0].size() <= maxStrLen));
+      // Note: Firestore rules don't have a simple way to iterate over all elements in a list.
+      // A more robust way is to check the total size of the document, but we'll rely on the 1MB doc limit.
+    }
+
     function isValidAnalysis(analysis) {
       let requiredFields = ['name', 'symptoms', 'treatment', 'seekDoctor', 'severity', 'confidence', 'disclaimer'];
       return analysis is map &&
              analysis.keys().hasAll(requiredFields) &&
              analysis.name is string && analysis.name.size() < 200 &&
-             analysis.symptoms is list && analysis.symptoms.size() < 20 &&
-             analysis.treatment is list && analysis.treatment.size() < 20 &&
-             analysis.seekDoctor is list && analysis.seekDoctor.size() < 20 &&
+             isValidStringList(analysis.symptoms, 20, 500) &&
+             isValidStringList(analysis.treatment, 20, 500) &&
+             isValidStringList(analysis.seekDoctor, 20, 500) &&
              analysis.severity in ['low', 'medium', 'high'] &&
              analysis.confidence is number &&
              analysis.disclaimer is string && analysis.disclaimer.size() < 1000;
