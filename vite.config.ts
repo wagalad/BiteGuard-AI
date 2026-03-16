@@ -32,8 +32,6 @@ export default defineConfig(({ mode }) => {
         tailwindcss(),
       ],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || ""),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY || ""),
         // Inject Firebase config for client-side use
         'import.meta.env.VITE_FIREBASE_CONFIG': JSON.stringify(firebaseConfig),
       },

@@ -25,25 +25,18 @@ const App: React.FC = () => {
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
 
   useEffect(() => {
-    // Test Firestore connection
-    const testConnection = async () => {
-      try {
-        await getDocFromServer(doc(db, 'test', 'connection'));
-      } catch (error) {
-        if (error instanceof Error && error.message.includes('the client is offline')) {
-          console.error("Please check your Firebase configuration. The client is offline.");
+    let unsubscribe = () => {};
+    if (auth) {
+      unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+        setIsAuthLoading(false);
+        if (currentUser) {
+          loadHistory(currentUser.uid);
         }
-      }
-    };
-    testConnection();
-
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      });
+    } else {
       setIsAuthLoading(false);
-      if (currentUser) {
-        loadHistory(currentUser.uid);
-      }
-    });
+    }
 
     // Load Teachable Machine model on mount
     const loadModel = async () => {
@@ -116,7 +109,11 @@ const App: React.FC = () => {
 
       // Now fetch Gemini Insight
       try {
-        const insight = await getGeminiAnalysis(result.name, result.confidence);
+        let token;
+        if (user) {
+          token = await user.getIdToken();
+        }
+        const insight = await getGeminiAnalysis(result.name, result.confidence, token);
         setAnalysis(prev => prev ? { ...prev, detailedAnalysis: insight } : null);
       } catch (geminiError) {
         console.error("Gemini insight failed", geminiError);

@@ -26,20 +26,37 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
     function isAdmin() {
       return isAuthenticated() &&
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-         (request.auth.token.email == "raghav.kilambi@gmail.com" && request.auth.token.email_verified == true));
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+         (request.auth.token.email == "raghav.kilambi@gmail.com" && isEmailVerified()));
     }
 
     function isRecent(time) {
       return time > request.time - duration.value(5, 'm') &&
              time <= request.time;
+    }
+
+    function isValidAnalysis(analysis) {
+      let requiredFields = ['name', 'symptoms', 'treatment', 'seekDoctor', 'severity', 'confidence', 'disclaimer'];
+      return analysis is map &&
+             analysis.keys().hasAll(requiredFields) &&
+             analysis.name is string && analysis.name.size() < 200 &&
+             analysis.symptoms is list && analysis.symptoms.size() < 20 &&
+             analysis.treatment is list && analysis.treatment.size() < 20 &&
+             analysis.seekDoctor is list && analysis.seekDoctor.size() < 20 &&
+             analysis.severity in ['low', 'medium', 'high'] &&
+             analysis.confidence is number &&
+             analysis.disclaimer is string && analysis.disclaimer.size() < 1000;
     }
 
     function isValidScan(data) {
@@ -49,18 +66,27 @@ service cloud.firestore {
              data.userId == request.auth.uid &&
              data.image is string &&
              data.image.size() > 100 &&
-             data.image.size() < 10485760 &&
-             data.analysis is map &&
+             data.image.size() < 1048576 && // 1MB limit for base64
+             isValidAnalysis(data.analysis) &&
              data.timestamp is timestamp &&
              isRecent(data.timestamp);
     }
 
+    function isValidUser(data) {
+      let allowedFields = ['email', 'role', 'displayName'];
+      return data.keys().hasOnly(allowedFields) &&
+             data.keys().hasAll(['email', 'role']) &&
+             data.email is string && data.email == request.auth.token.email &&
+             data.role in ['admin', 'user'] &&
+             (data.displayName == null || (data.displayName is string && data.displayName.size() < 100));
+    }
+
     match /scans/{scanId} {
       // Users can only read their own scans, admins can read all
-      allow read: if isAuthenticated() && (isAdmin() || (resource == null || resource.data.userId == request.auth.uid));
+      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
       
       // Users can only create scans for themselves
-      allow create: if isAuthenticated() && isValidScan(request.resource.data);
+      allow create: if isAuthenticated() && isEmailVerified() && isValidScan(request.resource.data);
       
       // Scans are immutable to prevent tampering with history
       allow update: if false;
@@ -70,10 +96,18 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      // PII Protection: Only owner or admin can read user profiles
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      // Only admins can create/update roles, except for initial user creation which defaults to 'user'
-      allow create: if isAuthenticated() && isOwner(userId) && request.resource.data.role == 'user';
-      allow update: if isAuthenticated() && isAdmin();
+      
+      // Initial user creation: must be owner, must be verified, must be 'user' role
+      allow create: if isOwner(userId) && isEmailVerified() &&
+                      isValidUser(request.resource.data) && 
+                      request.resource.data.role == 'user';
+      
+      // Updates: Only admins can change roles. Users can only update their own profile without changing role.
+      allow update: if isAuthenticated() && 
+                      isValidUser(request.resource.data) && 
+                      (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
     }
 
     // Default deny

@@ -1,43 +1,28 @@
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
 import { GeminiAnalysis } from './types';
-
-// Fallback configuration for deployment environments where the JSON file might be missing
-// These should be set in environment variables (e.g., in Vercel)
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-  firestoreDatabaseId: import.meta.env.VITE_FIREBASE_DATABASE_ID || "(default)"
-};
-
-// Try to load from the injected config if available
-try {
-  const injectedConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG || '{}');
-  if (injectedConfig.apiKey) {
-    Object.assign(firebaseConfig, injectedConfig);
-  }
-} catch (e) {
-  console.warn("Could not parse VITE_FIREBASE_CONFIG", e);
-}
+import firebaseConfig from './firebase-applet-config.json';
 
 // Initialize Firebase SDK
 function initializeFirebase() {
   if (getApps().length > 0) return getApp();
-  if (!firebaseConfig.apiKey) {
-    console.warn("Firebase API Key is missing. Check your environment variables.");
+  if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "") {
+    console.warn("Firebase API Key is missing. Firebase features will be disabled.");
+    return null;
   }
-  return initializeApp(firebaseConfig);
+  try {
+    return initializeApp(firebaseConfig);
+  } catch (e) {
+    console.error("Failed to initialize Firebase:", e);
+    return null;
+  }
 }
 
 const app = initializeFirebase();
 
-export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app, firebaseConfig.firestoreDatabaseId || "(default)") : null;
 export const googleProvider = new GoogleAuthProvider();
 
 export enum OperationType {
@@ -72,12 +57,12 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
+      userId: auth?.currentUser?.uid,
+      email: auth?.currentUser?.email,
+      emailVerified: auth?.currentUser?.emailVerified,
+      isAnonymous: auth?.currentUser?.isAnonymous,
+      tenantId: auth?.currentUser?.tenantId,
+      providerInfo: auth?.currentUser?.providerData.map(provider => ({
         providerId: provider.providerId,
         displayName: provider.displayName,
         email: provider.email,
@@ -92,9 +77,27 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 }
 
 export const signInWithGoogle = async () => {
+  if (!auth) {
+    throw new Error("Firebase Auth is not initialized.");
+  }
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    const user = result.user;
+    
+    // Initialize user profile in Firestore if it doesn't exist
+    if (db) {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          email: user.email,
+          role: 'user',
+          displayName: user.displayName
+        });
+      }
+    }
+    
+    return user;
   } catch (error: any) {
     console.error("Error signing in with Google:", error.code, error.message);
     if (error.code === 'auth/popup-closed-by-user') {
@@ -106,9 +109,13 @@ export const signInWithGoogle = async () => {
   }
 };
 
-export const logout = () => signOut(auth);
+export const logout = () => auth ? signOut(auth) : Promise.resolve();
 
 export const saveScan = async (userId: string, image: string, analysis: GeminiAnalysis) => {
+  if (!db) {
+    console.warn("Firestore is not initialized. Scan not saved.");
+    return null;
+  }
   const path = 'scans';
   try {
     const docRef = await addDoc(collection(db, path), {
@@ -124,6 +131,10 @@ export const saveScan = async (userId: string, image: string, analysis: GeminiAn
 };
 
 export const getUserScans = async (userId: string) => {
+  if (!db) {
+    console.warn("Firestore is not initialized. Cannot fetch scans.");
+    return [];
+  }
   const path = 'scans';
   try {
     const q = query(
