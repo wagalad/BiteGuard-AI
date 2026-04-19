@@ -47,9 +47,8 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
-         (request.auth.token.email == "raghav.kilambi@gmail.com" && isEmailVerified()));
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
     function isRecent(time) {
@@ -57,9 +56,32 @@ service cloud.firestore {
              time <= request.time;
     }
 
+    function isValidStringAt(lst, index, maxStrLen) {
+      return lst.size() <= index || (lst[index] is string && lst[index].size() <= maxStrLen);
+    }
+
     function isValidStringList(lst, maxItems, maxStrLen) {
       return lst is list && lst.size() <= maxItems &&
-             (lst.size() == 0 || (lst[0] is string && lst[0].size() <= maxStrLen));
+             isValidStringAt(lst, 0, maxStrLen) &&
+             isValidStringAt(lst, 1, maxStrLen) &&
+             isValidStringAt(lst, 2, maxStrLen) &&
+             isValidStringAt(lst, 3, maxStrLen) &&
+             isValidStringAt(lst, 4, maxStrLen) &&
+             isValidStringAt(lst, 5, maxStrLen) &&
+             isValidStringAt(lst, 6, maxStrLen) &&
+             isValidStringAt(lst, 7, maxStrLen) &&
+             isValidStringAt(lst, 8, maxStrLen) &&
+             isValidStringAt(lst, 9, maxStrLen) &&
+             isValidStringAt(lst, 10, maxStrLen) &&
+             isValidStringAt(lst, 11, maxStrLen) &&
+             isValidStringAt(lst, 12, maxStrLen) &&
+             isValidStringAt(lst, 13, maxStrLen) &&
+             isValidStringAt(lst, 14, maxStrLen) &&
+             isValidStringAt(lst, 15, maxStrLen) &&
+             isValidStringAt(lst, 16, maxStrLen) &&
+             isValidStringAt(lst, 17, maxStrLen) &&
+             isValidStringAt(lst, 18, maxStrLen) &&
+             isValidStringAt(lst, 19, maxStrLen);
     }
 
     function isValidAnalysis(analysis) {
