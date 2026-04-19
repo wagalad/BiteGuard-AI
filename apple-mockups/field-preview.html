@@ -242,32 +242,12 @@
       margin-top: 18px;
     }
 
-    .chips-wrap::before,
-    .chips-wrap::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 64px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .chips-wrap::before {
-      left: 0;
-      background: linear-gradient(90deg, var(--card), transparent);
-    }
-
-    .chips-wrap::after {
-      right: 0;
-      background: linear-gradient(270deg, var(--card), transparent);
-    }
-
     .chips-track {
       display: flex;
       width: max-content;
       gap: 10px;
       animation: chips-scroll 24s linear infinite;
+      padding-inline: 4px;
     }
 
     .chips-wrap:hover .chips-track {

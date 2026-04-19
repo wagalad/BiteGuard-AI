@@ -151,6 +151,7 @@
 
   .chips-track {
     animation: chips-scroll 24s linear infinite;
+    padding-inline: 0.25rem;
   }
 
   .animate-up {

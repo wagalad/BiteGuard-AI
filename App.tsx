@@ -174,8 +174,6 @@ const App: React.FC = () => {
               </div>
 
               <div className="mt-5 overflow-hidden relative chips-wrap">
-                <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-[linear-gradient(90deg,var(--color-apple-card),transparent)] z-10"></div>
-                <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-[linear-gradient(270deg,var(--color-apple-card),transparent)] z-10"></div>
                 <div className="chips-track flex w-max gap-3">
                   {[...Array(2)].map((_, i) => (
                     <div key={i} className="flex gap-3 pr-3">
