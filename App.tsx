@@ -1,12 +1,12 @@
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as tmImage from '@teachablemachine/image';
 import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
 import { LoadingStatus, GeminiAnalysis } from './types';
-import { ScanLine, Cpu, ShieldCheck, X } from 'lucide-react';
-import { auth, saveScan, getUserScans, db } from './firebase';
+import { ScanLine, Cpu, ShieldCheck, X, Sparkles, Clock3, Microscope, LibraryBig } from 'lucide-react';
+import { auth, saveScan, getUserScans } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { MODEL_URL, BITE_DATABASE, FALLBACK_INFO } from './constants';
 import { motion, AnimatePresence } from 'motion/react';
@@ -119,166 +119,190 @@ const App: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-10">
-        
-        <AnimatePresence>
-          {!imageSrc && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.6, ease: easeApple }}
-              className="text-center pt-8 mb-6"
-            >
-              <h1 className="text-[34px] md:text-[40px] leading-[1.1] font-bold tracking-tight text-[var(--color-apple-text)] mb-8">
-                Identify any bite,<br />
-                <span className="font-semibold text-[var(--color-apple-accent)]">instantly.</span>
+      <div className="flex flex-col gap-8 sm:gap-10">
+        {!imageSrc && (
+          <motion.section
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: easeApple }}
+            className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch"
+          >
+            <div className="glass-panel panel-shell rounded-[34px] p-6 sm:p-8 lg:p-10">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-success-bg)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-apple-success-text)]">
+                <Sparkles size={14} />
+                Teachable Machine classifier
+              </div>
+
+              <h1 className="mt-6 max-w-[12ch] text-[48px] sm:text-[62px] leading-[0.92] tracking-[-0.06em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
+                A sharper UI for a fast bite check.
               </h1>
 
-              <div className="flex flex-row justify-center gap-12 sm:gap-16">
+              <p className="mt-6 max-w-[38rem] text-[16px] sm:text-[17px] leading-8 text-[var(--color-apple-secondary)]">
+                Photograph the bite, run the same on-device model, and get the result in a layout that feels more like a field guide than a generic AI demo.
+              </p>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
                 {[
-                  { icon: ScanLine, text: "Snap a photo" },
-                  { icon: Cpu, text: "AI Analysis" },
-                  { icon: ShieldCheck, text: "Get insights" }
+                  { icon: ScanLine, label: 'Capture', text: 'Take or upload one clear image.' },
+                  { icon: Cpu, label: 'Classify', text: 'The Teachable Machine model checks the pattern.' },
+                  { icon: ShieldCheck, label: 'Review', text: 'Read symptoms, first aid, and care guidance.' },
                 ].map((item, i) => (
-                  <motion.div 
-                    key={i}
-                    initial={{ opacity: 0, y: 15 }}
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 + (i * 0.1), ease: easeApple }}
-                    className="flex flex-col items-center"
+                    transition={{ duration: 0.45, delay: 0.18 + i * 0.08, ease: easeApple }}
+                    className="rounded-[24px] border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.22)] dark:bg-[rgba(255,255,255,0.02)] p-4"
                   >
-                    <item.icon className="w-6 h-6 stroke-[1.5px] opacity-80 mb-2 text-[var(--color-apple-text)]" />
-                    <p className="text-[13px] font-medium text-[var(--color-apple-secondary)]">{item.text}</p>
+                    <item.icon className="h-5 w-5 text-[var(--color-apple-accent)]" strokeWidth={2} />
+                    <p className="mt-4 text-[13px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-secondary)]">{item.label}</p>
+                    <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">{item.text}</p>
                   </motion.div>
                 ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
 
-        <motion.div 
+            <div className="glass-panel panel-shell rounded-[34px] p-6 sm:p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="section-eyebrow">What it identifies</p>
+                  <h2 className="mt-2 text-[28px] tracking-[-0.04em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">Common bite patterns</h2>
+                </div>
+                <div className="rounded-2xl bg-[var(--color-apple-separator)] p-3 text-[var(--color-apple-accent)]">
+                  <Microscope size={20} />
+                </div>
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                {['Mosquitoes', 'Ticks', 'Spiders', 'Bedbugs', 'Fleas', 'Ants', 'Wasps', 'Bees'].map((species) => (
+                  <span key={species} className="rounded-full border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.3)] dark:bg-[rgba(255,255,255,0.03)] px-4 py-2 text-[13px] font-semibold text-[var(--color-apple-text)]">
+                    {species}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[24px] bg-[rgba(85,99,74,0.09)] dark:bg-[rgba(150,171,127,0.08)] p-5">
+                  <Clock3 size={18} className="text-[var(--color-apple-accent)]" />
+                  <p className="mt-3 text-[13px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-secondary)]">Fast workflow</p>
+                  <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">No feature changes. Same model, same scan path, cleaner presentation.</p>
+                </div>
+                <div className="rounded-[24px] bg-[rgba(185,123,29,0.1)] dark:bg-[rgba(214,162,78,0.08)] p-5">
+                  <LibraryBig size={18} className="text-[var(--color-apple-warning-text)]" />
+                  <p className="mt-3 text-[13px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-secondary)]">Reference-backed</p>
+                  <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">Results stay paired with symptoms, first aid, and care guidance.</p>
+                </div>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        <motion.section
           layout
           transition={{ duration: 0.6, ease: easeApple }}
           className="w-full relative z-10"
         >
           {!imageSrc ? (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: easeApple }}
+              transition={{ duration: 0.6, delay: 0.08, ease: easeApple }}
             >
-              <ImageUploader 
-                onImageSelected={handleImageSelected} 
-                isAnalyzing={status === 'analyzing'} 
-              />
+              <ImageUploader onImageSelected={handleImageSelected} isAnalyzing={status === 'analyzing'} />
             </motion.div>
           ) : (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, ease: easeApple }}
-              className="flex flex-col gap-6 w-full max-w-[680px] mx-auto"
+              transition={{ duration: 0.45, ease: easeApple }}
+              className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-start"
             >
-              {/* Preview Container */}
-              <div className="relative w-full rounded-[14px] overflow-hidden aspect-[4/3] glass-panel p-1">
-                <img src={imageSrc} alt="Preview" className="w-full h-full object-cover block rounded-[10px]" />
-                <button 
-                  onClick={clearImage}
-                  className="absolute top-4 right-4 bg-[var(--color-apple-glass)] backdrop-blur-[20px] backdrop-saturate-[180%] border-none rounded-full p-2 text-[var(--color-apple-text)] cursor-pointer flex items-center justify-center transition-transform active:scale-95 shadow-sm"
-                  aria-label="Retake photo"
-                >
-                  <X size={16} strokeWidth={2} />
-                </button>
+              <div className="glass-panel panel-shell rounded-[32px] p-4 sm:p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="section-eyebrow">Selected photo</p>
+                    <p className="mt-1 text-[15px] text-[var(--color-apple-secondary)]">Review the image before running the scan.</p>
+                  </div>
+                  <button
+                    onClick={clearImage}
+                    className="h-10 w-10 rounded-full bg-[var(--color-apple-separator)] text-[var(--color-apple-text)] cursor-pointer flex items-center justify-center transition-transform active:scale-95"
+                    aria-label="Retake photo"
+                  >
+                    <X size={16} strokeWidth={2} />
+                  </button>
+                </div>
+
+                <div className="relative w-full rounded-[26px] overflow-hidden aspect-[4/5] sm:aspect-[4/3] border border-[var(--color-apple-border)]">
+                  <img src={imageSrc} alt="Preview" className="w-full h-full object-cover block" />
+                </div>
+
+                {status === 'error' && (
+                  <div className="mt-4 rounded-[22px] border border-[var(--color-apple-danger-text)]/20 bg-[var(--color-apple-danger-bg)] px-4 py-3 text-[14px] font-medium text-[var(--color-apple-danger-text)]">
+                    {errorMessage}
+                  </div>
+                )}
+
+                {status !== 'success' && (
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={status === 'analyzing'}
+                    className="mt-4 w-full bg-[var(--color-apple-accent)] text-white border-none rounded-[22px] py-4 px-6 text-[16px] font-bold flex justify-center items-center cursor-pointer transition-all hover:bg-[var(--color-apple-accent-hover)] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
+                  >
+                    {status === 'analyzing' ? (
+                      <div className="w-[22px] h-[22px] border-[2px] border-[rgba(255,255,255,0.32)] border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <span>Run bite scan</span>
+                    )}
+                  </button>
+                )}
               </div>
 
-              {/* Error Message */}
-              {status === 'error' && (
-                <div className="bg-[var(--color-apple-danger-bg)] text-[var(--color-apple-danger-text)] rounded-[14px] p-4 text-[15px] font-medium text-center border border-[rgba(255,59,48,0.2)] glass-panel backdrop-saturate-200">
-                  {errorMessage}
-                </div>
-              )}
-
-              {/* Action Button */}
-              {status !== 'success' && (
-                <button 
-                  onClick={handleAnalyze}
-                  disabled={status === 'analyzing'}
-                  className="w-full bg-[var(--color-apple-accent)] text-white border-none rounded-full py-[14px] px-6 text-[17px] font-medium flex justify-center items-center cursor-pointer transition-all hover:bg-[var(--color-apple-accent-hover)] active:scale-97 disabled:opacity-70 disabled:cursor-not-allowed"
-                >
-                  {status === 'analyzing' ? (
-                    <div className="w-[20px] h-[20px] border-[1.5px] border-[rgba(255,255,255,0.3)] border-t-white rounded-full animate-spin"></div>
-                  ) : (
-                    <span>Analyze Photo</span>
-                  )}
-                </button>
-              )}
-
-              {/* Results Container */}
               <AnimatePresence>
-                {status === 'success' && analysis && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
+                {status === 'success' && analysis ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 26 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: easeApple, delay: 0.2 }}
+                    transition={{ duration: 0.55, ease: easeApple, delay: 0.12 }}
                   >
                     <ResultsSection analysis={analysis} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="glass-panel panel-shell rounded-[32px] p-6 sm:p-8"
+                  >
+                    <p className="section-eyebrow">Ready to scan</p>
+                    <h2 className="mt-3 text-[34px] leading-[0.98] tracking-[-0.05em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
+                      Your result will appear here.
+                    </h2>
+                    <p className="mt-4 max-w-[38rem] text-[15px] leading-7 text-[var(--color-apple-secondary)]">
+                      Once you run the image through the model, this panel will show the matched bite type, confidence level, symptoms, first aid guidance, and when to seek medical care.
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
           )}
-        </motion.div>
+        </motion.section>
 
-        {/* Species Strip (Only visible on fresh load without image) */}
-        {!imageSrc && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "0px" }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-8 relative"
-          >
-            <p className="text-[11px] font-semibold text-[var(--color-apple-tertiary)] uppercase tracking-[1px] text-center mb-4">
-              What we can identify
-            </p>
-            <div className="overflow-hidden w-full mask-edges relative max-w-[600px] mx-auto">
-              <motion.div 
-                className="flex w-max"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{ duration: 25, ease: "linear", repeat: Infinity }}
-              >
-                {[...Array(2)].map((_, i) => (
-                  <div key={i} className="flex flex-nowrap">
-                    {['Mosquitoes', 'Ticks', 'Spiders', 'Bedbugs', 'Fleas', 'Ants', 'Wasps', 'Bees'].map((species) => (
-                      <div key={species} className="bg-[rgba(120,120,128,0.12)] dark:bg-[rgba(120,120,128,0.24)] px-4 py-2 mr-3 rounded-[8px] text-[13px] tracking-[-0.01em] text-[var(--color-apple-text)] whitespace-nowrap shrink-0 border border-[rgba(0,0,0,0.02)]">
-                        {species}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* History Section */}
         {user && history.length > 0 && !imageSrc && (
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
+          <motion.section
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: easeApple }}
-            className="w-full"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.65, ease: easeApple }}
+            className="glass-panel panel-shell rounded-[32px] p-6 sm:p-8"
           >
-            <h2 className="text-[13px] uppercase tracking-wide text-[var(--color-apple-secondary)] pl-4 mb-2">Recent Scans</h2>
-            <div className="glass-panel p-[16px] rounded-[10px] overflow-hidden">
-            
-            {isHistoryLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="w-6 h-6 border-[1.5px] border-[rgba(0,0,0,0.1)] border-t-[var(--color-apple-accent)] rounded-full animate-spin"></div>
+            <div className="flex items-center justify-between gap-4 mb-5">
+              <div>
+                <p className="section-eyebrow">Recent scans</p>
+                <h2 className="mt-2 text-[28px] tracking-[-0.04em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">Past image checks</h2>
               </div>
-            ) : (
+              {isHistoryLoading && <div className="w-6 h-6 border-[1.5px] border-[rgba(0,0,0,0.1)] border-t-[var(--color-apple-accent)] rounded-full animate-spin"></div>}
+            </div>
+
+            {!isHistoryLoading && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {history.map((scan) => (
                   <button
@@ -289,16 +313,16 @@ const App: React.FC = () => {
                       setStatus('success');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="group relative aspect-square rounded-[12px] glass-panel overflow-hidden transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] block w-full p-0.5"
+                    className="group relative aspect-square rounded-[24px] overflow-hidden transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] block w-full border border-[var(--color-apple-border)]"
                   >
-                    <img 
-                      src={scan.imageData} 
-                      alt="Past scan" 
-                      className="w-full h-full object-cover rounded-[10px] transition-transform duration-500"
+                    <img
+                      src={scan.imageData}
+                      alt="Past scan"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-x-1.5 bottom-1.5 rounded-[8px] bg-[rgba(0,0,0,0.4)] backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity flex items-center px-2 py-1.5 border border-[rgba(255,255,255,0.1)]">
-                      <span className="text-[12px] text-white font-medium truncate w-full text-center">
+                    <div className="absolute inset-x-3 bottom-3 rounded-[16px] bg-[rgba(20,16,12,0.72)] px-3 py-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                      <span className="text-[12px] text-white font-semibold truncate block text-center">
                         {scan.analysis.name}
                       </span>
                     </div>
@@ -306,49 +330,36 @@ const App: React.FC = () => {
                 ))}
               </div>
             )}
-            </div>
-          </motion.div>
+          </motion.section>
         )}
 
-        {/* Citations & Data Sources Section */}
         {!imageSrc && (
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
+          <motion.section
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, delay: 0.1, ease: easeApple }}
-            className="w-full mb-8"
+            viewport={{ once: true, margin: '-80px' }}
+            transition={{ duration: 0.65, delay: 0.08, ease: easeApple }}
+            className="grid gap-6 lg:grid-cols-2"
           >
-            <h2 className="text-[13px] uppercase tracking-wide text-[var(--color-apple-secondary)] pl-4 mb-2">Information & Sources</h2>
-            <div className="glass-panel rounded-[10px] overflow-hidden p-[16px]">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h4 className="font-semibold text-[var(--color-apple-secondary)] text-[11px] uppercase tracking-[1px]">Medical References</h4>
-                <ul className="space-y-3 text-[13px] text-[var(--color-apple-text)]">
-                  <li>— CDC. (2024). "Insects and Scorpions."</li>
-                  <li>— Mayo Clinic. (2023). "Insect bites and stings."</li>
-                  <li>— WHO. (2022). "Vector-borne diseases."</li>
-                </ul>
-              </div>
-              <div className="space-y-4">
-                <h4 className="font-semibold text-[var(--color-apple-secondary)] text-[11px] uppercase tracking-[1px]">AI Datasets</h4>
-                <ul className="space-y-3 text-[13px] text-[var(--color-apple-text)]">
-                  <li>— Google Teachable Machine. (2024).</li>
-                  <li>— TensorFlow.js Team. (2024).</li>
-                  <li>— DermNet NZ Image Library.</li>
-                </ul>
-              </div>
+            <div className="glass-panel panel-shell rounded-[32px] p-6 sm:p-8">
+              <p className="section-eyebrow">Medical references</p>
+              <ul className="mt-5 space-y-4 text-[15px] leading-7 text-[var(--color-apple-text)]">
+                <li>CDC. Insects and scorpions.</li>
+                <li>Mayo Clinic. Insect bites and stings.</li>
+                <li>WHO. Vector-borne diseases.</li>
+              </ul>
             </div>
+            <div className="glass-panel panel-shell rounded-[32px] p-6 sm:p-8">
+              <p className="section-eyebrow">Model and dataset sources</p>
+              <ul className="mt-5 space-y-4 text-[15px] leading-7 text-[var(--color-apple-text)]">
+                <li>Google Teachable Machine.</li>
+                <li>TensorFlow.js.</li>
+                <li>DermNet NZ image library.</li>
+              </ul>
             </div>
-          </motion.div>
+          </motion.section>
         )}
       </div>
-      <style>{`
-        .mask-edges {
-          -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-          mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
-        }
-      `}</style>
     </Layout>
   );
 };

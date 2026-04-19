@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GeminiAnalysis } from '../types';
 import { motion } from 'motion/react';
+import { AlertTriangle, HeartPulse, ShieldPlus, Stethoscope } from 'lucide-react';
 
 interface ResultsSectionProps {
   analysis: GeminiAnalysis;
@@ -36,84 +37,96 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
   };
 
   const style = severityProps[analysis.severity as keyof typeof severityProps] || severityProps.medium;
+  const confidenceLabel =
+    analysis.confidence >= 0.8 ? 'Strong match' :
+    analysis.confidence >= 0.6 ? 'Possible match' :
+    'Low-confidence match';
 
   return (
     <div className="w-full">
-      {/* Overview Group */}
-      <div className="mb-6">
-        <div className="glass-panel rounded-[10px] overflow-hidden">
-          <div className="p-[16px]">
-            <div className="flex justify-between items-start mb-4">
-              <h1 className="text-[28px] font-bold tracking-tight text-[var(--color-apple-text)]">{analysis.name}</h1>
-              <span className={`px-2.5 py-1 rounded-[6px] text-[13px] font-medium tracking-tight ${style.badgeClass}`}>
-                {analysis.severity.charAt(0).toUpperCase() + analysis.severity.slice(1)} Risk
+      <div className="glass-panel panel-shell rounded-[30px] overflow-hidden p-6 sm:p-7 mb-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-[40rem]">
+            <p className="section-eyebrow">Scan result</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <h1 className="text-[34px] sm:text-[44px] leading-[0.95] tracking-[-0.05em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
+                {analysis.name}
+              </h1>
+              <span className={`px-3 py-1.5 rounded-full text-[13px] font-bold tracking-tight ${style.badgeClass}`}>
+                {analysis.severity.charAt(0).toUpperCase() + analysis.severity.slice(1)} risk
               </span>
             </div>
-            
-            <div>
-              <div className="flex justify-between mb-2 text-[15px]">
-                <span className="text-[var(--color-apple-text)] leading-[20px]">Model Confidence</span>
-                <span className={`font-medium ${style.textClass}`}>
-                  {(analysis.confidence * 100).toFixed(0)}%
-                </span>
-              </div>
-              <div className="h-1.5 bg-[var(--color-apple-separator)] rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-1000 ease-[var(--ease-apple-smooth)] w-0 ${style.fillClass}`}
-                  style={{ width: fillWidth }}
-                ></div>
-              </div>
+            <p className="mt-4 text-[15px] leading-7 text-[var(--color-apple-secondary)]">
+              The model thinks this image most closely matches <span className="font-semibold text-[var(--color-apple-text)]">{analysis.name.toLowerCase()}</span>. Use the guidance below as an educational first pass, not a diagnosis.
+            </p>
+          </div>
+
+          <div className="w-full lg:max-w-[18rem] rounded-[24px] border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.24)] dark:bg-[rgba(255,255,255,0.03)] p-5">
+            <div className="flex justify-between mb-2 text-[14px] font-medium">
+              <span className="text-[var(--color-apple-secondary)]">Model confidence</span>
+              <span className={`font-extrabold ${style.textClass}`}>
+                {(analysis.confidence * 100).toFixed(0)}%
+              </span>
             </div>
+            <div className="h-2 bg-[var(--color-apple-separator)] rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full transition-all duration-1000 ease-[var(--ease-apple-smooth)] w-0 ${style.fillClass}`}
+                style={{ width: fillWidth }}
+              ></div>
+            </div>
+            <p className="mt-3 text-[13px] font-semibold text-[var(--color-apple-secondary)]">{confidenceLabel}</p>
           </div>
         </div>
       </div>
-        
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
+        className="grid gap-5"
       >
-        {/* Symptoms Group */}
-        <div className="mb-6">
-          <h2 className="text-[13px] uppercase tracking-wide text-[var(--color-apple-secondary)] pl-4 mb-2">Symptoms</h2>
-          <div className="glass-panel rounded-[10px] overflow-hidden">
-            {analysis.symptoms.map((s, i) => (
-              <div key={i} className={`p-[11px_16px] flex items-start ${i !== analysis.symptoms.length - 1 ? 'border-b border-[var(--color-apple-separator)]' : ''}`}>
-                <span className="text-[17px] font-normal leading-[22px] tracking-[-0.01em] text-[var(--color-apple-text)]">{s}</span>
+        {[
+          {
+            title: 'Common symptoms',
+            icon: HeartPulse,
+            items: analysis.symptoms,
+          },
+          {
+            title: 'First aid',
+            icon: ShieldPlus,
+            items: analysis.treatment,
+          },
+          {
+            title: 'When to seek care',
+            icon: Stethoscope,
+            items: analysis.seekDoctor,
+          },
+        ].map((section) => (
+          <div key={section.title} className="glass-panel panel-shell rounded-[28px] overflow-hidden p-5 sm:p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-11 w-11 rounded-2xl bg-[var(--color-apple-separator)] flex items-center justify-center text-[var(--color-apple-accent)]">
+                <section.icon size={20} />
               </div>
-            ))}
+              <div>
+                <p className="section-eyebrow">{section.title}</p>
+                <p className="text-[14px] text-[var(--color-apple-secondary)]">Structured guidance from the matched bite profile</p>
+              </div>
+            </div>
+            <div className="grid gap-3">
+              {section.items.map((item, i) => (
+                <div key={i} className="rounded-[20px] border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.25)] dark:bg-[rgba(255,255,255,0.02)] px-4 py-3.5">
+                  <span className="text-[16px] font-medium leading-7 tracking-[-0.01em] text-[var(--color-apple-text)]">{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        ))}
 
-        {/* First Aid Group */}
-        <div className="mb-6">
-          <h2 className="text-[13px] uppercase tracking-wide text-[var(--color-apple-secondary)] pl-4 mb-2">First Aid</h2>
-          <div className="glass-panel rounded-[10px] overflow-hidden">
-            {analysis.treatment.map((t, i) => (
-              <div key={i} className={`p-[11px_16px] flex items-start ${i !== analysis.treatment.length - 1 ? 'border-b border-[var(--color-apple-separator)]' : ''}`}>
-                <span className="text-[17px] font-normal leading-[22px] tracking-[-0.01em] text-[var(--color-apple-text)]">{t}</span>
-              </div>
-            ))}
-          </div>
+        <div className="rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-danger-bg)] px-5 py-4 text-[var(--color-apple-danger-text)] flex items-start gap-3">
+          <AlertTriangle size={18} className="mt-0.5 shrink-0" />
+          <p className="text-[13px] leading-6">{analysis.disclaimer}</p>
         </div>
-
-        {/* Seek Care Group */}
-        <div className="mb-6">
-          <h2 className="text-[13px] uppercase tracking-wide text-[var(--color-apple-secondary)] pl-4 mb-2">When to seek care</h2>
-          <div className="glass-panel rounded-[10px] overflow-hidden">
-            {analysis.seekDoctor.map((d, i) => (
-              <div key={i} className={`p-[11px_16px] flex items-start ${i !== analysis.seekDoctor.length - 1 ? 'border-b border-[var(--color-apple-separator)]' : ''}`}>
-                <span className="text-[17px] font-normal leading-[22px] tracking-[-0.01em] text-[var(--color-apple-text)]">{d}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <p className="text-[13px] text-[var(--color-apple-secondary)] text-center mt-6 px-4 leading-[18px]">
-          {analysis.disclaimer}
-        </p>
       </motion.div>
     </div>
   );
 };
-

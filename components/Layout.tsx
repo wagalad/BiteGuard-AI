@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, User, Moon, Sun } from 'lucide-react';
+import { User, Moon, Sun, Shield, Leaf } from 'lucide-react';
 import { auth, signInWithGoogle, logout } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -43,26 +43,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="flex flex-col min-h-screen font-sans relative overflow-x-hidden transition-colors duration-300">
-      
-      {/* Liquid Glass Base Layer (Static, non-flashing ambient mesh) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[var(--color-apple-accent)] opacity-[0.03] dark:opacity-[0.08] blur-[100px] mix-blend-normal"></div>
-        <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#AF52DE] opacity-[0.02] dark:opacity-[0.05] blur-[120px] mix-blend-normal"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#34C759] opacity-[0.02] dark:opacity-[0.05] blur-[150px] mix-blend-normal"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(83,64,46,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(83,64,46,0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-35"></div>
+        <div className="absolute top-[-8%] right-[-8%] h-[42vw] w-[42vw] rounded-full bg-[rgba(150,171,127,0.12)] blur-[110px]"></div>
+        <div className="absolute left-[-10%] top-[20%] h-[32vw] w-[32vw] rounded-full bg-[rgba(185,123,29,0.08)] blur-[110px]"></div>
+        <div className="absolute bottom-[-16%] left-[22%] h-[36vw] w-[36vw] rounded-full bg-[rgba(124,72,54,0.08)] blur-[140px]"></div>
       </div>
 
-      {/* Navigation Bar */}
       <div className="sticky top-4 w-full z-50 px-4 sm:px-6 pointer-events-none flex justify-center">
-        <header className="w-full max-w-[800px] pointer-events-auto glass-panel rounded-full px-5 py-3 flex items-center justify-between shadow-[var(--shadow-apple-glass)] border border-[var(--color-apple-border)]">
-          <div className="flex items-baseline select-none">
-            <span className="font-semibold text-[17px] text-[var(--color-apple-text)] tracking-tight">BiteGuard</span>
-            <span className="font-medium text-[17px] text-[var(--color-apple-accent)] tracking-tight ml-1">AI</span>
+        <header className="w-full max-w-[1120px] pointer-events-auto glass-panel panel-shell rounded-[28px] px-4 sm:px-6 py-4 flex items-center justify-between shadow-[var(--shadow-apple-glass)]">
+          <div className="flex items-center gap-3 select-none">
+            <div className="h-10 w-10 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center shadow-[var(--shadow-apple-lift)]">
+              <Shield size={18} strokeWidth={2.2} />
+            </div>
+            <div>
+              <p className="text-[18px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">BiteGuard</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)]">Field Scan Kit</p>
+            </div>
           </div>
           
           <div className="flex items-center gap-4 sm:gap-6">
             <button
               onClick={toggleTheme}
-              className="p-1.5 rounded-full text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-separator)] transition-colors"
+              className="h-10 w-10 rounded-full text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-separator)] transition-colors flex items-center justify-center"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
@@ -109,15 +112,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </header>
       </div>
 
-      <main className="flex-grow z-10 pt-16 pb-12 w-full max-w-[800px] mx-auto px-6">
+      <main className="flex-grow z-10 pt-10 pb-12 w-full max-w-[1120px] mx-auto px-4 sm:px-6">
         {children}
       </main>
 
-      <footer className="z-10 mt-auto border-t border-[var(--color-apple-separator)] bg-[var(--color-apple-bg)]">
-        <div className="max-w-[800px] mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[var(--color-apple-secondary)]">
-            <p>&copy; {new Date().getFullYear()} BiteGuard AI. All rights reserved.</p>
-            <p className="flex items-center gap-1.5">
+      <footer className="z-10 mt-auto px-4 sm:px-6 pb-6">
+        <div className="max-w-[1120px] mx-auto glass-panel panel-shell rounded-[28px] px-6 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[13px] text-[var(--color-apple-secondary)]">
+            <div>
+              <p className="font-semibold text-[var(--color-apple-text)]">BiteGuard AI</p>
+              <p className="mt-1 max-w-[36rem] leading-6">Teachable Machine powered bite detection with a calmer, field-ready interface for quick first-pass guidance.</p>
+            </div>
+            <p className="flex items-center gap-2 whitespace-nowrap">
+              <Leaf size={14} />
               Built by <span className="font-medium text-[var(--color-apple-text)]">Raghav Kilambi</span>
             </p>
           </div>

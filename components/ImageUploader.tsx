@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Image as ImageIcon, X } from 'lucide-react';
+import { Camera, Image as ImageIcon, X, ShieldCheck, Bug, ScanSearch } from 'lucide-react';
 
 interface ImageUploaderProps {
   onImageSelected: (imageSrc: string) => void;
@@ -116,7 +116,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
   return (
     <div className="w-full">
       {isCameraOpen ? (
-        <div className="relative rounded-[24px] overflow-hidden bg-black aspect-[3/4] md:aspect-video shadow-[var(--shadow-apple-lift)]">
+        <div className="relative rounded-[30px] overflow-hidden bg-black aspect-[3/4] md:aspect-[5/4] shadow-[var(--shadow-apple-lift)] border border-white/10">
           <video 
             ref={videoRef} 
             autoPlay 
@@ -124,6 +124,12 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
             muted 
             className="w-full h-full object-cover"
           />
+          <div className="absolute inset-x-0 top-0 p-4 z-20 bg-gradient-to-b from-black/70 to-transparent">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-md">
+              <ScanSearch size={14} />
+              Aim for one bite area in clear light
+            </div>
+          </div>
           <div className="absolute bottom-0 left-0 right-0 p-8 flex justify-center gap-8 items-center z-20 bg-gradient-to-t from-black/80 to-transparent pt-20">
             <button 
               onClick={stopCamera}
@@ -141,28 +147,67 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-[400px] mx-auto glass-panel rounded-[10px] overflow-hidden">
-          <button 
-            onClick={startCamera}
-            disabled={isAnalyzing}
-            className="w-full flex items-center p-[11px_16px] border-b border-[var(--color-apple-separator)] transition-colors hover:bg-[rgba(120,120,128,0.08)] cursor-pointer active:bg-[rgba(120,120,128,0.16)] dark:hover:bg-[rgba(120,120,128,0.18)] dark:active:bg-[rgba(120,120,128,0.28)] disabled:opacity-50"
-          >
-            <div className="w-[30px] h-[30px] rounded-[7px] bg-[var(--color-apple-accent)] flex items-center justify-center text-white mr-4">
-              <Camera size={18} strokeWidth={2} />
+        <div className="glass-panel panel-shell rounded-[32px] overflow-hidden p-5 sm:p-6">
+          <div className="rounded-[28px] border border-dashed border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.26)] dark:bg-[rgba(255,255,255,0.02)] p-5 sm:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="max-w-[28rem]">
+                <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-success-bg)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-apple-success-text)]">
+                  <ShieldCheck size={14} />
+                  On-device image scan
+                </div>
+                <h3 className="mt-4 text-[30px] sm:text-[38px] leading-[1] tracking-[-0.04em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
+                  Photograph the bite,
+                  <span className="block text-[var(--color-apple-accent)]">then let the model inspect it.</span>
+                </h3>
+                <p className="mt-4 text-[15px] leading-7 text-[var(--color-apple-secondary)]">
+                  Use bright, even light and keep the bite centered. The cleaner the photo, the better the pattern match.
+                </p>
+              </div>
+              <div className="rounded-[24px] bg-[rgba(85,99,74,0.08)] dark:bg-[rgba(150,171,127,0.08)] p-4 text-[var(--color-apple-secondary)]">
+                <Bug size={26} className="mb-3 text-[var(--color-apple-accent)]" />
+                <p className="text-[12px] font-bold uppercase tracking-[0.16em]">Best results</p>
+                <p className="mt-2 max-w-[13rem] text-[13px] leading-6">Single bite area, no harsh shadow, skin filling most of the frame.</p>
+              </div>
             </div>
-            <p className="text-[17px] font-normal leading-[22px] tracking-[-0.01em] text-[var(--color-apple-text)] flex-grow text-left">Take Photo</p>
-          </button>
-          
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isAnalyzing}
-            className="w-full flex items-center p-[11px_16px] transition-colors hover:bg-[rgba(120,120,128,0.08)] cursor-pointer active:bg-[rgba(120,120,128,0.16)] dark:hover:bg-[rgba(120,120,128,0.18)] dark:active:bg-[rgba(120,120,128,0.28)] disabled:opacity-50"
-          >
-            <div className="w-[30px] h-[30px] rounded-[7px] bg-[#34C759] flex items-center justify-center text-white mr-4">
-              <ImageIcon size={18} strokeWidth={2} />
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <button 
+                onClick={startCamera}
+                disabled={isAnalyzing}
+                className="group rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-5 py-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] disabled:opacity-50"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center">
+                    <Camera size={22} strokeWidth={2} />
+                  </div>
+                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Live capture</span>
+                </div>
+                <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Take photo</p>
+                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Open your camera and frame the bite directly.</p>
+              </button>
+              
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isAnalyzing}
+                className="group rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-5 py-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] disabled:opacity-50"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-success)] text-white flex items-center justify-center">
+                    <ImageIcon size={22} strokeWidth={2} />
+                  </div>
+                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Upload image</span>
+                </div>
+                <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Choose from library</p>
+                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Use a clear existing photo in JPG, PNG, or WebP.</p>
+              </button>
             </div>
-            <p className="text-[17px] font-normal leading-[22px] tracking-[-0.01em] text-[var(--color-apple-text)] flex-grow text-left">Photo Library</p>
-          </button>
+
+            <div className="mt-5 flex flex-wrap gap-3 text-[12px] font-semibold text-[var(--color-apple-secondary)]">
+              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Up to 5MB</span>
+              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Auto-resized for speed</span>
+              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">No workflow changes</span>
+            </div>
+          </div>
         </div>
       )}
 
