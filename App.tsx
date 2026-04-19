@@ -130,15 +130,15 @@ const App: React.FC = () => {
             <div className="glass-panel panel-shell rounded-[34px] p-6 sm:p-8 lg:p-10">
               <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-success-bg)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-apple-success-text)]">
                 <Sparkles size={14} />
-                Teachable Machine classifier
+                Educational bite guide
               </div>
 
               <h1 className="mt-6 max-w-[12ch] text-[48px] sm:text-[62px] leading-[0.92] tracking-[-0.06em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
-                A sharper UI for a fast bite check.
+                Understand the bite before you panic.
               </h1>
 
               <p className="mt-6 max-w-[38rem] text-[16px] sm:text-[17px] leading-8 text-[var(--color-apple-secondary)]">
-                Photograph the bite, run the same on-device model, and get the result in a layout that feels more like a field guide than a generic AI demo.
+                Photograph the area, review the likely match, and use the guidance to decide what to watch, what to do next, and when to get medical help.
               </p>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-3">

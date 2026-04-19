@@ -121,7 +121,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[13px] text-[var(--color-apple-secondary)]">
             <div>
               <p className="font-semibold text-[var(--color-apple-text)]">BiteGuard AI</p>
-              <p className="mt-1 max-w-[36rem] leading-6">Teachable Machine powered bite detection with a calmer, field-ready interface for quick first-pass guidance.</p>
+              <p className="mt-1 max-w-[42rem] leading-6">This is an educational tool only and should not replace medical advice, diagnosis, or treatment. Always consult a qualified medical professional if you are concerned about a bite or sting.</p>
             </div>
             <p className="flex items-center gap-2 whitespace-nowrap">
               <Leaf size={14} />
