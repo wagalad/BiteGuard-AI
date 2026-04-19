@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteGuard AI - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Apple Color System Mockup */
+            --apple-bg: #f5f5f7;
+            --apple-card: #ffffff;
+            --apple-accent: #0071e3;
+            --apple-accent-hover: #0077ed;
+            --apple-text: #1d1d1f;
+            --apple-secondary: #6e6e73;
+            --apple-tertiary: #aeaeb2;
+            --apple-separator: rgba(0, 0, 0, 0.08);
+            --apple-glass: rgba(255, 255, 255, 0.72);
+            
+            --shadow-soft: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lift: 0 4px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+            --radius-card: 18px;
+            --radius-pill: 980px;
+            
+            --easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --easing-poppy: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * { box-sizing: border-box; }
+        h1, h2, h3, p { margin: 0; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        /* Typography Scale */
+        .large-title { font-size: 34px; font-weight: 300; letter-spacing: -0.5px; line-height: 1.1; }
+        .title-1 { font-size: 28px; font-weight: 400; letter-spacing: -0.3px; line-height: 1.2; }
+        .title-2 { font-size: 22px; font-weight: 400; letter-spacing: -0.2px; }
+        .headline { font-size: 17px; font-weight: 500; letter-spacing: -0.1px; }
+        .body-text { font-size: 17px; font-weight: 400; letter-spacing: 0; line-height: 1.47; }
+        .callout { font-size: 16px; font-weight: 400; }
+        .subhead { font-size: 15px; font-weight: 400; color: var(--apple-secondary); }
+        .footnote { font-size: 13px; font-weight: 400; color: var(--apple-tertiary); }
+        .caption { font-size: 12px; font-weight: 400; color: var(--apple-tertiary); letter-spacing: 0.1px; }
+
+        /* Animations */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeUp 400ms var(--easing-smooth) forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 60ms; }
+        .delay-2 { animation-delay: 120ms; }
+        .delay-3 { animation-delay: 180ms; }
+
+        /* Navigation Bar */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--apple-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--apple-separator);
+            padding: 12px 24px;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .logo { display: flex; align-items: baseline; }
+        .logo-bite { font-weight: 500; font-size: 17px; color: var(--apple-text); letter-spacing: -0.1px; }
+        .logo-ai { font-weight: 300; font-size: 17px; color: var(--apple-accent); letter-spacing: -0.1px; }
+        .nav-actions { display: flex; align-items: center; gap: 24px; }
+        .nav-link { font-size: 15px; font-weight: 400; color: var(--apple-secondary); transition: color 0.2s ease; }
+        .nav-link:hover { color: var(--apple-text); }
+        
+        .btn-signin {
+            background: var(--apple-accent);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 7px 16px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .btn-signin:hover { background: var(--apple-accent-hover); }
+        .btn-signin:active { transform: scale(0.97); }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .hero-title {
+            color: var(--apple-text);
+            margin-bottom: 16px;
+            white-space: pre-line;
+        }
+        .hero-sub {
+            max-width: 480px;
+            margin: 0 auto;
+            color: var(--apple-secondary);
+        }
+
+        /* Feature Row */
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feature-item i { stroke-width: 1.5; color: var(--apple-text); }
+
+        /* Upload Zone */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 64px;
+        }
+        .upload-card {
+            background: var(--apple-card);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-soft);
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s var(--easing-smooth), box-shadow 0.2s var(--easing-smooth);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid transparent;
+        }
+        .upload-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lift);
+        }
+        .upload-card.drag-active {
+            border: 1px dashed var(--apple-accent);
+            background: rgba(0, 113, 227, 0.02);
+        }
+        .icon-wrap i { color: var(--apple-accent); stroke-width: 1.2; width: 24px; height: 24px; }
+        
+        /* Species Strip */
+        .species-section { text-align: center; }
+        .species-title { margin-bottom: 24px; color: var(--apple-text); }
+        .species-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            justify-content: center;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .species-scroll::-webkit-scrollbar { display: none; }
+        .species-chip {
+            background: var(--apple-card);
+            border: 1px solid var(--apple-separator);
+            border-radius: var(--radius-pill);
+            padding: 6px 16px;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .upload-grid { grid-template-columns: 1fr; }
+            .features { gap: 24px; flex-direction: column; align-items: center; }
+            .species-scroll { justify-content: flex-start; padding: 0 24px 16px; margin: 0 -24px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-bite">BiteGuard</span><span class="logo-ai"> AI</span>
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="nav-link subhead">History</a>
+                <button class="btn-signin">Sign In</button>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <!-- Hero -->
+        <header class="hero animate-up">
+            <h1 class="large-title hero-title">Identify any bite,
+instantly.</h1>
+            <p class="body-text hero-sub">Advanced computer vision runs locally on your device to analyze insect bites and provide rapid, private insights.</p>
+        </header>
+        
+        <!-- Features Row -->
+        <div class="features animate-up delay-1">
+            <div class="feature-item">
+                <i data-lucide="shield-check" width="16" height="16"></i>
+                <span class="subhead">On-device privacy</span>
+            </div>
+            <div class="feature-item">
+                <i data-lucide="zap" width="16" height="16"></i>
+                <span class="subhead">Real-time analysis</span>
+            </div>
+            <div class="feature-item">
+                <i data-lucide="cross" width="16" height="16"></i>
+                <span class="subhead">Actionable first-aid</span>
+            </div>
+        </div>
+        
+        <!-- Upload Zone -->
+        <div class="upload-grid animate-up delay-2">
+            <!-- Simulating link to results.html for mockup purposes -->
+            <div class="upload-card" onclick="window.location.href='results.html'" id="dropzone">
+                <div class="icon-wrap"><i data-lucide="upload"></i></div>
+                <span class="headline">Upload Photo</span>
+            </div>
+            <div class="upload-card" onclick="window.location.href='results.html'">
+                <div class="icon-wrap"><i data-lucide="camera"></i></div>
+                <span class="headline">Use Camera</span>
+            </div>
+        </div>
+        
+        <!-- Species Strip -->
+        <div class="species-section animate-up delay-3">
+            <h2 class="title-2 species-title">What we can identify</h2>
+            <div class="species-scroll">
+                <div class="species-chip footnote">Mosquito</div>
+                <div class="species-chip footnote">Tick</div>
+                <div class="species-chip footnote">Spider</div>
+                <div class="species-chip footnote">Bed Bug</div>
+                <div class="species-chip footnote">Flea</div>
+                <div class="species-chip footnote">Bee Sting</div>
+                <div class="species-chip footnote">Ant</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Subtle drag state mockup
+        const dropzone = document.getElementById('dropzone');
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('drag-active');
+        });
+        dropzone.addEventListener('dragleave', (e) => {
+            dropzone.classList.remove('drag-active');
+        });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('drag-active');
+            window.location.href = 'results.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,28 +1,135 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   
-  --color-medical-50: #f0f9ff;
-  --color-medical-100: #e0f2fe;
-  --color-medical-200: #bae6fd;
-  --color-medical-300: #7dd3fc;
-  --color-medical-400: #38bdf8;
-  --color-medical-500: #0ea5e9;
-  --color-medical-600: #0284c7;
-  --color-medical-700: #0369a1;
-  --color-medical-800: #075985;
-  --color-medical-900: #0c4a6e;
-  --color-medical-950: #082f49;
+  /* Apple iOS Dynamic Colors */
+  --color-apple-bg: var(--c-bg);
+  --color-apple-card: var(--c-card);
+  --color-apple-border: var(--c-border);
+  --color-apple-accent: var(--c-accent);
+  --color-apple-accent-hover: var(--c-accent-hover);
+  --color-apple-text: var(--c-text);
+  --color-apple-secondary: var(--c-secondary);
+  --color-apple-tertiary: var(--c-tertiary);
+  --color-apple-separator: var(--c-separator);
+  --color-apple-glass: var(--c-glass);
 
-  --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.05);
-  --shadow-glow: 0 0 20px rgba(14, 165, 233, 0.3);
+  --color-apple-success: var(--c-success);
+  --color-apple-success-bg: var(--c-success-bg);
+  --color-apple-success-text: var(--c-success-text);
+  
+  --color-apple-warning: var(--c-warning);
+  --color-apple-warning-bg: var(--c-warning-bg);
+  --color-apple-warning-text: var(--c-warning-text);
+
+  --color-apple-danger: var(--c-danger);
+  --color-apple-danger-bg: var(--c-danger-bg);
+  --color-apple-danger-text: var(--c-danger-text);
+
+  /* iOS Visual Depth */
+  --shadow-apple-soft: var(--s-soft);
+  --shadow-apple-lift: var(--s-lift);
+  --shadow-apple-glass: var(--s-glass);
+
+  /* Easing */
+  --ease-apple-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-apple-poppy: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  /* Ultra-Premium Glass Light Mode */
+  --c-bg: #F5F5F7; 
+  --c-card: rgba(255, 255, 255, 0.65);
+  --c-border: rgba(255, 255, 255, 0.85); /* Frost edge highlight */
+  --c-accent: #007AFF;
+  --c-accent-hover: #0056b3;
+  --c-text: #000000;
+  --c-secondary: rgba(60, 60, 67, 0.60);
+  --c-tertiary: rgba(60, 60, 67, 0.30);
+  --c-separator: rgba(60, 60, 67, 0.12);
+  --c-glass: rgba(255, 255, 255, 0.70);
+
+  --c-success: #34C759;
+  --c-success-bg: rgba(52, 199, 89, 0.12);
+  --c-success-text: #248A3D;
+
+  --c-warning: #FF9500;
+  --c-warning-bg: rgba(255, 149, 0, 0.12);
+  --c-warning-text: #B46A00;
+
+  --c-danger: #FF3B30;
+  --c-danger-bg: rgba(255, 59, 48, 0.12);
+  --c-danger-text: #C42B1C;
+
+  --s-soft: 0 1px 2px rgba(0,0,0,0.04);
+  --s-lift: 0 4px 12px rgba(0,0,0,0.08);
+  --s-glass: 0 8px 32px rgba(0,0,0,0.04), inset 0 1px 1px rgba(255,255,255,0.7);
+}
+
+.dark {
+  /* Ultra-Premium Glass Dark Mode */
+  --c-bg: #000000;
+  --c-card: rgba(32, 32, 34, 0.60);
+  --c-border: rgba(255, 255, 255, 0.12);
+  --c-accent: #0A84FF;
+  --c-accent-hover: #409CFF;
+  --c-text: #FFFFFF;
+  --c-secondary: rgba(235, 235, 245, 0.60);
+  --c-tertiary: rgba(235, 235, 245, 0.30);
+  --c-separator: rgba(84, 84, 88, 0.5);
+  --c-glass: rgba(28, 28, 30, 0.65);
+
+  --c-success: #30D158;
+  --c-success-bg: rgba(48, 209, 88, 0.2);
+  --c-success-text: #30D158;
+
+  --c-warning: #FF9F0A;
+  --c-warning-bg: rgba(255, 159, 10, 0.2);
+  --c-warning-text: #FF9F0A;
+
+  --c-danger: #FF453A;
+  --c-danger-bg: rgba(255, 69, 58, 0.2);
+  --c-danger-text: #FF453A;
+
+  --s-soft: 0 1px 2px rgba(0,0,0,0.2);
+  --s-lift: 0 4px 12px rgba(0,0,0,0.4);
+  --s-glass: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800 antialiased min-h-screen dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300;
+    @apply bg-[var(--color-apple-bg)] text-[var(--color-apple-text)] antialiased min-h-screen selection:bg-[var(--color-apple-accent)] selection:text-white transition-colors duration-300;
+    /* iOS base text properties */
+    letter-spacing: -0.01em; 
   }
+}
+
+@layer utilities {
+  .glass-panel {
+    background-color: var(--color-apple-card);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid var(--color-apple-border);
+    box-shadow: var(--shadow-apple-glass);
+  }
+
+  .animate-up {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 400ms var(--ease-apple-smooth) forwards;
+  }
+  
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .delay-1 { animation-delay: 60ms; }
+  .delay-2 { animation-delay: 120ms; }
+  .delay-3 { animation-delay: 180ms; }
+  .delay-4 { animation-delay: 240ms; }
 }

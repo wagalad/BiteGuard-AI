@@ -1,6 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
     // ===============================================================
     // Assumed Data Model
     // ===============================================================
@@ -22,11 +27,17 @@ service cloud.firestore {
     // ===============================================================
 
     // Helper Functions
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+
     function isAuthenticated() {
       return request.auth != null;
     }
 
     function isEmailVerified() {
+      // In a real Google Sign In flow, email_verified is true.
+      // We enforce this as a security best practice.
       return isAuthenticated() && request.auth.token.email_verified == true;
     }
 
@@ -49,8 +60,6 @@ service cloud.firestore {
     function isValidStringList(lst, maxItems, maxStrLen) {
       return lst is list && lst.size() <= maxItems &&
              (lst.size() == 0 || (lst[0] is string && lst[0].size() <= maxStrLen));
-      // Note: Firestore rules don't have a simple way to iterate over all elements in a list.
-      // A more robust way is to check the total size of the document, but we'll rely on the 1MB doc limit.
     }
 
     function isValidAnalysis(analysis) {
@@ -89,37 +98,27 @@ service cloud.firestore {
     }
 
     match /scans/{scanId} {
-      // Users can only read their own scans, admins can read all
-      allow read: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow list: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow get: if isAuthenticated() && isValidId(scanId) && (isAdmin() || resource.data.userId == request.auth.uid);
       
-      // Users can only create scans for themselves
-      allow create: if isAuthenticated() && isEmailVerified() && isValidScan(request.resource.data);
+      allow create: if isAuthenticated() && isValidId(scanId) && isEmailVerified() && isValidScan(request.resource.data);
       
-      // Scans are immutable to prevent tampering with history
       allow update: if false;
       
-      // Users can delete their own scans
-      allow delete: if isAuthenticated() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow delete: if isAuthenticated() && isValidId(scanId) && (isAdmin() || resource.data.userId == request.auth.uid);
     }
 
     match /users/{userId} {
-      // PII Protection: Only owner or admin can read user profiles
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow get: if isAuthenticated() && isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAuthenticated() && isAdmin(); // Only allow admins to list users
       
-      // Initial user creation: must be owner, must be verified, must be 'user' role
-      allow create: if isOwner(userId) && isEmailVerified() &&
+      allow create: if isValidId(userId) && isOwner(userId) && isEmailVerified() &&
                       isValidUser(request.resource.data) && 
                       request.resource.data.role == 'user';
       
-      // Updates: Only admins can change roles. Users can only update their own profile without changing role.
-      allow update: if isAuthenticated() && 
+      allow update: if isAuthenticated() && isValidId(userId) &&
                       isValidUser(request.resource.data) && 
                       (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
-    }
-
-    // Default deny
-    match /{path=**} {
-      allow read, write: if false;
     }
   }
 }

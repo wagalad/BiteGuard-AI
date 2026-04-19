@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, ShieldCheck, Sun, Moon, LogIn, LogOut, User } from 'lucide-react';
+import { LogOut, User, Moon, Sun } from 'lucide-react';
 import { auth, signInWithGoogle, logout } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -8,84 +8,82 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
   const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const isCurrentlyDark = document.documentElement.classList.contains('dark');
-    setIsDark(isCurrentlyDark);
+    // Check initial theme preference
+    const storedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+      setTheme('dark');
+      document.documentElement.classList.add('dark');
+    } else {
+      setTheme('light');
+      document.documentElement.classList.remove('dark');
+    }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-
     return () => unsubscribe();
   }, []);
 
   const toggleTheme = () => {
-    setIsDark((prev) => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-      return next;
-    });
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   return (
-    <div className="flex flex-col min-h-screen font-sans relative overflow-x-hidden bg-slate-50 dark:bg-slate-950 selection:bg-medical-100 selection:text-medical-900 dark:selection:bg-medical-900 dark:selection:text-medical-100 transition-colors duration-300">
+    <div className="flex flex-col min-h-screen font-sans relative overflow-x-hidden transition-colors duration-300">
       
-      {/* Ambient Background Gradients */}
-      <div className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-500">
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-medical-200/20 dark:bg-medical-900/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 mix-blend-multiply dark:mix-blend-screen" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2 mix-blend-multiply dark:mix-blend-screen" />
-        <div className="absolute bottom-0 left-1/2 w-[600px] h-[600px] bg-indigo-50/50 dark:bg-indigo-950/20 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/3" />
+      {/* Liquid Glass Base Layer (Static, non-flashing ambient mesh) */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[var(--color-apple-accent)] opacity-[0.03] dark:opacity-[0.08] blur-[100px] mix-blend-normal"></div>
+        <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#AF52DE] opacity-[0.02] dark:opacity-[0.05] blur-[120px] mix-blend-normal"></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#34C759] opacity-[0.02] dark:opacity-[0.05] blur-[150px] mix-blend-normal"></div>
       </div>
 
-      <header className="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800 shadow-sm transition-all duration-300">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="bg-gradient-to-tr from-medical-600 to-medical-400 p-2 rounded-xl text-white shadow-glow">
-              <Activity size={20} strokeWidth={2.5} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">BiteGuard AI</h1>
-            </div>
+      {/* Navigation Bar */}
+      <div className="sticky top-4 w-full z-50 px-4 sm:px-6 pointer-events-none flex justify-center">
+        <header className="w-full max-w-[800px] pointer-events-auto glass-panel rounded-full px-5 py-3 flex items-center justify-between shadow-[var(--shadow-apple-glass)] border border-[var(--color-apple-border)]">
+          <div className="flex items-baseline select-none">
+            <span className="font-semibold text-[17px] text-[var(--color-apple-text)] tracking-tight">BiteGuard</span>
+            <span className="font-medium text-[17px] text-[var(--color-apple-accent)] tracking-tight ml-1">AI</span>
           </div>
-          <div className="flex items-center gap-3">
-             <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-medical-700 dark:text-medical-400 bg-medical-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-medical-100 dark:border-slate-700 transition-colors">
-              <ShieldCheck size={14} />
-              <span>Secure & Private Analysis</span>
-            </div>
-            
-            <button 
+          
+          <div className="flex items-center gap-4 sm:gap-6">
+            <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-medical-400/50"
-              aria-label="Toggle Dark Mode"
+              className="p-1.5 rounded-full text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-separator)] transition-colors"
+              aria-label="Toggle theme"
             >
-              {isDark ? <Sun size={20} className="text-amber-400" /> : <Moon size={20} />}
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
             </button>
 
             {user ? (
-              <div className="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-800">
-                <div className="hidden md:block text-right">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white leading-none">{user.displayName}</p>
-                  <button 
-                    onClick={logout}
-                    className="text-[10px] text-slate-500 hover:text-red-500 transition-colors uppercase tracking-widest font-bold"
-                  >
-                    Logout
-                  </button>
+              <div className="flex items-center gap-3">
+                <div className="text-right flex flex-col hidden sm:flex">
+                   <p className="text-[13px] font-medium text-[var(--color-apple-text)] leading-tight">{user.displayName}</p>
+                   <button 
+                     onClick={logout}
+                     className="text-[12px] text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] transition-colors text-right"
+                   >
+                     Sign Out
+                   </button>
                 </div>
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt="profile" className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700" />
+                  <img src={user.photoURL} alt="profile" className="w-[34px] h-[34px] rounded-full border border-[var(--color-apple-border)] shadow-sm" />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                    <User size={16} />
+                  <div className="w-[34px] h-[34px] rounded-full bg-[var(--color-apple-separator)] flex items-center justify-center text-[var(--color-apple-secondary)]">
+                    <User size={16} strokeWidth={1.5} />
                   </div>
                 )}
               </div>
@@ -97,45 +95,30 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   } catch (error: any) {
                     if (error.code === 'auth/unauthorized-domain') {
                       alert("This domain is not authorized in Firebase. Please add " + window.location.hostname + " to your authorized domains in the Firebase Console.");
-                    } else if (error.code === 'auth/popup-closed-by-user') {
-                      // Silently ignore or show a small toast
-                    } else {
+                    } else if (error.code !== 'auth/popup-closed-by-user') {
                       alert("Sign in failed: " + error.message);
                     }
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
+                className="bg-[var(--color-apple-accent)] hover:bg-[var(--color-apple-accent-hover)] text-white rounded-full px-4 py-1.5 text-[15px] font-medium transition-all duration-200 active:scale-95 shadow-sm border border-[rgba(255,255,255,0.1)]"
               >
-                <LogIn size={16} />
-                <span>Sign In</span>
+                Sign In
               </button>
             )}
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
 
-      <main className="flex-grow z-10 pt-24 pb-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          {children}
-        </div>
+      <main className="flex-grow z-10 pt-16 pb-12 w-full max-w-[800px] mx-auto px-6">
+        {children}
       </main>
 
-      <footer className="z-10 mt-auto bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-300">
-        <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6">
-          <div className="bg-amber-50/50 dark:bg-amber-900/20 rounded-2xl p-5 border border-amber-100/80 dark:border-amber-900/30 mb-6 flex gap-4 md:items-center flex-col md:flex-row transition-colors">
-             <div className="bg-amber-100 dark:bg-amber-900/50 p-2 rounded-full w-fit">
-                <ShieldCheck className="text-amber-600 dark:text-amber-400" size={20} />
-             </div>
-             <p className="text-sm text-amber-900/80 dark:text-amber-200/80 leading-relaxed max-w-3xl">
-              <strong>Medical Disclaimer:</strong> This application utilizes experimental AI for educational purposes only. 
-              Results are not a diagnosis. Always consult a qualified healthcare provider for medical advice or if symptoms persist.
-            </p>
-          </div>
-          
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400 dark:text-slate-500">
+      <footer className="z-10 mt-auto border-t border-[var(--color-apple-separator)] bg-[var(--color-apple-bg)]">
+        <div className="max-w-[800px] mx-auto px-6 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[var(--color-apple-secondary)]">
             <p>&copy; {new Date().getFullYear()} BiteGuard AI. All rights reserved.</p>
             <p className="flex items-center gap-1.5">
-              Built by <span className="font-semibold text-slate-600 dark:text-slate-400">Raghav Kilambi</span>
+              Built by <span className="font-medium text-[var(--color-apple-text)]">Raghav Kilambi</span>
             </p>
           </div>
         </div>

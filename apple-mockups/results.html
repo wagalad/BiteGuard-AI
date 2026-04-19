@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteGuard AI - Result</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Apple Color System Mockup */
+            --apple-bg: #f5f5f7;
+            --apple-card: #ffffff;
+            --apple-accent: #0071e3;
+            --apple-accent-hover: #0077ed;
+            --apple-text: #1d1d1f;
+            --apple-secondary: #6e6e73;
+            --apple-tertiary: #aeaeb2;
+            --apple-separator: rgba(0, 0, 0, 0.08);
+            --apple-glass: rgba(255, 255, 255, 0.72);
+            
+            --shadow-soft: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --radius-card: 18px;
+            --radius-pill: 980px;
+            
+            --easing-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+            
+            /* Status Colors */
+            --color-low-bg: rgba(48, 209, 88, 0.12);
+            --color-low-text: #25a244; /* Accessible green on light */
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        * { box-sizing: border-box; }
+        h1, h2, h3, h4, p { margin: 0; font-weight: normal; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        /* Typography Scale */
+        .title-1 { font-size: 28px; font-weight: 400; letter-spacing: -0.3px; line-height: 1.2; }
+        .headline { font-size: 17px; font-weight: 500; letter-spacing: -0.1px; }
+        .body-text { font-size: 17px; font-weight: 400; letter-spacing: 0; }
+        .subhead { font-size: 15px; font-weight: 400; color: var(--apple-secondary); }
+        .subhead-bold { font-size: 15px; font-weight: 500; color: var(--apple-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .footnote { font-size: 13px; font-weight: 400; color: var(--apple-tertiary); }
+        .footnote-medium { font-size: 13px; font-weight: 500; }
+        
+        /* Animations */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeUp 400ms var(--easing-smooth) forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 60ms; }
+        .delay-2 { animation-delay: 120ms; }
+        .delay-3 { animation-delay: 180ms; }
+        .delay-4 { animation-delay: 240ms; }
+
+        /* Navigation Bar */
+        .nav {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--apple-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--apple-separator);
+            padding: 12px 24px;
+        }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; max-width: 980px; margin: 0 auto; }
+        .logo { display: flex; align-items: baseline; }
+        .logo-bite { font-weight: 500; font-size: 17px; letter-spacing: -0.1px; }
+        .logo-ai { font-weight: 300; font-size: 17px; color: var(--apple-accent); letter-spacing: -0.1px; }
+        .nav-actions { display: flex; align-items: center; gap: 24px; }
+        .nav-link { font-size: 15px; font-weight: 400; color: var(--apple-secondary); transition: color 0.2s ease; }
+        .nav-link:hover { color: var(--apple-text); }
+        .btn-signin { background: var(--apple-accent); color: #fff; border: none; border-radius: var(--radius-pill); padding: 7px 16px; font-size: 17px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-signin:hover { background: var(--apple-accent-hover); }
+
+        /* Layout */
+        .container { max-width: 680px; margin: 0 auto; padding: 40px 24px; display: flex; flex-direction: column; gap: 24px; }
+
+        /* Preview Image */
+        .preview-container {
+            position: relative;
+            width: 100%;
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            background: #e5e5ea;
+        }
+        .preview-image {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .btn-reset {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: var(--apple-glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 8px;
+            color: var(--apple-text);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .btn-reset i { stroke-width: 2; width: 16px; height: 16px; }
+        .btn-reset:active { transform: scale(0.92); }
+
+        /* Analyze Button */
+        .btn-analyze {
+            width: 100%;
+            background: var(--apple-accent);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 14px 24px;
+            font-size: 17px;
+            font-weight: 500;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .btn-analyze:hover { background: var(--apple-accent-hover); }
+        .btn-analyze:active { transform: scale(0.97); }
+
+        /* Spinner */
+        .spinner {
+            width: 20px; height: 20px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .hidden { display: none; }
+
+        /* Result Card */
+        .result-card {
+            background: var(--apple-card);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .severity-badge {
+            background: var(--color-low-bg);
+            color: var(--color-low-text);
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+        }
+
+        /* Confidence Bar */
+        .confidence-section {
+            border-top: 1px solid var(--apple-separator);
+            padding-top: 16px;
+        }
+        .confidence-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .confidence-track {
+            height: 4px;
+            background: var(--apple-separator);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: var(--color-low-text);
+            width: 0%; /* Initial state for animation */
+            transition: width 1s var(--easing-smooth);
+            border-radius: 2px;
+        }
+
+        /* Insights */
+        .insights-container { margin-top: 32px; }
+        .insight-section {
+            padding-top: 24px;
+            border-top: 1px solid var(--apple-separator);
+            margin-bottom: 24px;
+        }
+        .insight-section:last-child { margin-bottom: 0; }
+        .insight-header { margin-bottom: 12px; }
+        .insight-list { display: flex; flex-direction: column; gap: 8px; }
+        .insight-list li {
+            position: relative;
+            padding-left: 20px;
+            line-height: 1.4;
+        }
+        .insight-list li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            color: var(--apple-secondary);
+        }
+
+        /* History Strip */
+        .history-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0 0 0;
+        }
+        .btn-secondary {
+            background: rgba(0,0,0,0.05);
+            color: var(--apple-text);
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 8px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn-secondary:hover { background: rgba(0,0,0,0.08); }
+
+        /* Disclaimer & Sources */
+        .footer-info {
+            border-top: 1px solid var(--apple-separator);
+            padding-top: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .btn-sources {
+            background: none;
+            border: none;
+            color: var(--apple-accent);
+            cursor: pointer;
+            padding: 0;
+        }
+        .btn-sources:hover { text-decoration: underline; }
+        .sources-list { display: none; margin-top: 12px; }
+        .sources-list.open { display: block; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="logo">
+                <a href="index.html" style="display:flex; align-items:baseline;">
+                    <span class="logo-bite">BiteGuard</span><span class="logo-ai"> AI</span>
+                </a>
+            </div>
+            <div class="nav-actions">
+                <a href="#" class="nav-link subhead">History</a>
+                <button class="btn-signin">Sign In</button>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <!-- Preview -->
+        <div class="preview-container animate-up">
+            <img src="https://picsum.photos/seed/skin/800/600" alt="Bite photo" class="preview-image">
+            <button class="btn-reset" onclick="window.location.href='index.html'" aria-label="Retake photo">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <!-- Action Button (Pre-analysis mock) -->
+        <button class="btn-analyze animate-up delay-1" id="analyzeBtn" onclick="runMockAnalysis()">
+            <span id="btnText">Analyze Photo</span>
+            <div class="spinner" id="btnSpinner"></div>
+        </button>
+
+        <!-- Result Content (Hidden initially, shown after 1s in mock) -->
+        <div id="resultContent" style="display: none; padding-top: 8px;">
+            <div class="result-card animate-up">
+                <div class="result-header">
+                    <h1 class="title-1">Mosquito bite</h1>
+                    <span class="severity-badge footnote-medium">LOW</span>
+                </div>
+                
+                <div class="confidence-section">
+                    <div class="confidence-labels footnote">
+                        <span style="color: var(--apple-secondary)">Apple Neural Engine</span>
+                        <span style="color: var(--color-low-text); font-weight: 500;">87% match</span>
+                    </div>
+                    <div class="confidence-track">
+                        <div class="confidence-fill" id="confidenceBar"></div>
+                    </div>
+                </div>
+                
+                <div class="insights-container animate-up delay-1">
+                    <section class="insight-section">
+                        <h2 class="subhead-bold insight-header">Symptoms</h2>
+                        <ul class="insight-list subhead">
+                            <li>Raised, red, itchy bump</li>
+                            <li>Swelling around the bite</li>
+                            <li>Appears soon after being bitten</li>
+                        </ul>
+                    </section>
+                    <section class="insight-section">
+                        <h2 class="subhead-bold insight-header">First Aid</h2>
+                        <ul class="insight-list subhead">
+                            <li>Wash the area with soap and water</li>
+                            <li>Apply an ice pack to reduce swelling</li>
+                            <li>Use anti-itch cream or antihistamines</li>
+                        </ul>
+                    </section>
+                    <section class="insight-section">
+                        <h2 class="subhead-bold insight-header">When to seek care</h2>
+                        <ul class="insight-list subhead">
+                            <li>The bite seems infected (warm, very red, pus)</li>
+                            <li>You experience fever or body aches</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            
+            <div class="history-strip animate-up delay-2">
+                <span class="subhead">Save to your personal history</span>
+                <button class="btn-secondary">Save Scan</button>
+            </div>
+            
+            <div class="footer-info animate-up delay-3">
+                <p class="footnote">BiteGuard AI is an identification tool, not a medical device. Always consult a healthcare professional for diagnosis and treatment.</p>
+                <div>
+                    <button class="btn-sources footnote" onclick="toggleSources()">Show sources</button>
+                    <ul class="sources-list footnote" id="sourcesList">
+                        <li>— Mayo Clinic: Bug Bites and Stings</li>
+                        <li>— CDC: Mosquito Bite Prevention</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function runMockAnalysis() {
+            const btn = document.getElementById('analyzeBtn');
+            const txt = document.getElementById('btnText');
+            const spin = document.getElementById('btnSpinner');
+            const content = document.getElementById('resultContent');
+            const bar = document.getElementById('confidenceBar');
+
+            txt.classList.add('hidden');
+            spin.classList.remove('hidden');
+            
+            setTimeout(() => {
+                btn.style.display = 'none';
+                content.style.display = 'block';
+                
+                // Trigger reflow for animation
+                void bar.offsetWidth; 
+                bar.style.width = '87%';
+            }, 1000);
+        }
+
+        function toggleSources() {
+            const list = document.getElementById('sourcesList');
+            const btn = document.querySelector('.btn-sources');
+            list.classList.toggle('open');
+            btn.textContent = list.classList.contains('open') ? 'Hide sources' : 'Show sources';
+        }
+
+        // Auto-run analysis for mockup demonstration if desired
+        // setTimeout(runMockAnalysis, 400);
+    </script>
+</body>
+</html>
