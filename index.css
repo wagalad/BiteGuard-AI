@@ -145,6 +145,14 @@
     text-transform: uppercase;
   }
 
+  .chips-wrap:hover .chips-track {
+    animation-play-state: paused;
+  }
+
+  .chips-track {
+    animation: chips-scroll 24s linear infinite;
+  }
+
   .animate-up {
     opacity: 0;
     transform: translateY(10px);
@@ -153,6 +161,11 @@
   
   @keyframes fadeUp {
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes chips-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
 
   .delay-1 { animation-delay: 60ms; }

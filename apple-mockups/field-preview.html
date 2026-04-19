@@ -236,11 +236,48 @@
       line-height: 1.7;
     }
 
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    .chips-wrap {
+      position: relative;
+      overflow: hidden;
       margin-top: 18px;
+    }
+
+    .chips-wrap::before,
+    .chips-wrap::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 64px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .chips-wrap::before {
+      left: 0;
+      background: linear-gradient(90deg, var(--card), transparent);
+    }
+
+    .chips-wrap::after {
+      right: 0;
+      background: linear-gradient(270deg, var(--card), transparent);
+    }
+
+    .chips-track {
+      display: flex;
+      width: max-content;
+      gap: 10px;
+      animation: chips-scroll 24s linear infinite;
+    }
+
+    .chips-wrap:hover .chips-track {
+      animation-play-state: paused;
+    }
+
+    .chips-group {
+      display: flex;
+      gap: 10px;
+      padding-right: 10px;
     }
 
     .chip {
@@ -250,6 +287,12 @@
       font-size: 13px;
       font-weight: 700;
       background: rgba(255,255,255,0.3);
+      white-space: nowrap;
+    }
+
+    @keyframes chips-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
     }
 
     .mini-grid {
@@ -548,15 +591,29 @@
       <div class="panel hero-right">
         <div class="eyebrow">What it identifies</div>
         <h2 style="margin-top:10px;font-family:'Fraunces',serif;font-size:30px;letter-spacing:-0.04em;">Common bite patterns</h2>
-        <div class="chips">
-          <div class="chip">Mosquitoes</div>
-          <div class="chip">Ticks</div>
-          <div class="chip">Spiders</div>
-          <div class="chip">Bedbugs</div>
-          <div class="chip">Fleas</div>
-          <div class="chip">Ants</div>
-          <div class="chip">Wasps</div>
-          <div class="chip">Bees</div>
+        <div class="chips-wrap">
+          <div class="chips-track">
+            <div class="chips-group">
+              <div class="chip">Mosquitoes</div>
+              <div class="chip">Ticks</div>
+              <div class="chip">Spiders</div>
+              <div class="chip">Bedbugs</div>
+              <div class="chip">Fleas</div>
+              <div class="chip">Ants</div>
+              <div class="chip">Wasps</div>
+              <div class="chip">Bees</div>
+            </div>
+            <div class="chips-group" aria-hidden="true">
+              <div class="chip">Mosquitoes</div>
+              <div class="chip">Ticks</div>
+              <div class="chip">Spiders</div>
+              <div class="chip">Bedbugs</div>
+              <div class="chip">Fleas</div>
+              <div class="chip">Ants</div>
+              <div class="chip">Wasps</div>
+              <div class="chip">Bees</div>
+            </div>
+          </div>
         </div>
         <div class="mini-grid">
           <div class="mini-card">
