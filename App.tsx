@@ -66,6 +66,11 @@ const App: React.FC = () => {
     setErrorMessage(null);
   };
 
+  const handleHomeClick = () => {
+    clearImage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleImageSelected = (src: string) => {
     setImageSrc(src);
     setAnalysis(null);
@@ -118,7 +123,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <Layout onHomeClick={handleHomeClick}>
       <div className="flex flex-col gap-8 sm:gap-10">
         {!imageSrc && (
           <motion.section

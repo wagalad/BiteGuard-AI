@@ -5,9 +5,10 @@ import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 interface LayoutProps {
   children: React.ReactNode;
+  onHomeClick?: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -52,7 +53,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <div className="sticky top-4 w-full z-50 px-4 sm:px-6 pointer-events-none flex justify-center">
         <header className="w-full max-w-[1120px] pointer-events-auto glass-panel panel-shell rounded-[28px] px-4 sm:px-6 py-4 flex items-center justify-between shadow-[var(--shadow-apple-glass)]">
-          <div className="flex items-center gap-3 select-none">
+          <button
+            type="button"
+            onClick={onHomeClick}
+            className="flex items-center gap-3 select-none cursor-pointer bg-transparent border-none p-0 text-left"
+            aria-label="Go to home screen"
+          >
             <div className="h-10 w-10 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center shadow-[var(--shadow-apple-lift)]">
               <Shield size={18} strokeWidth={2.2} />
             </div>
@@ -60,7 +66,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <p className="text-[18px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">BiteGuard</p>
               <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)]">Field Scan Kit</p>
             </div>
-          </div>
+          </button>
           
           <div className="flex items-center gap-4 sm:gap-6">
             <button

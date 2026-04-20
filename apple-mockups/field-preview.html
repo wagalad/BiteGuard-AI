@@ -107,6 +107,8 @@
       display: flex;
       gap: 12px;
       align-items: center;
+      text-decoration: none;
+      color: inherit;
     }
 
     .brand-icon {
@@ -518,9 +520,9 @@
 </head>
 <body>
   <div class="grid-bg"></div>
-  <div class="wrap">
+  <div class="wrap" id="home">
     <div class="panel nav">
-      <div class="brand">
+      <a class="brand" href="#home" aria-label="Go to home screen">
         <div class="brand-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">
             <path d="M9.5 8.5V6.8C9.5 5.25 10.62 4 12 4s2.5 1.25 2.5 2.8v1.7" />
@@ -537,7 +539,7 @@
           <div class="brand-title">BiteGuard</div>
           <div class="brand-sub">Field Scan Kit</div>
         </div>
-      </div>
+      </a>
       <div style="display:flex;gap:10px;align-items:center;">
         <button class="btn btn-ghost" id="theme-toggle" type="button">Dark mode</button>
         <button class="btn btn-primary">Sign In</button>
