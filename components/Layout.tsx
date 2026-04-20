@@ -56,15 +56,15 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
           <button
             type="button"
             onClick={onHomeClick}
-            className="flex items-center gap-3 select-none cursor-pointer bg-transparent border-none p-0 text-left"
+            className="group flex items-center gap-3 select-none cursor-pointer bg-transparent border-none p-0 text-left transition-transform duration-200 hover:-translate-y-0.5"
             aria-label="Go to home screen"
           >
-            <div className="h-10 w-10 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center shadow-[var(--shadow-apple-lift)]">
+            <div className="h-10 w-10 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center shadow-[var(--shadow-apple-lift)] transition-transform duration-200 group-hover:scale-[1.04]">
               <Shield size={18} strokeWidth={2.2} />
             </div>
             <div>
-              <p className="text-[18px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">BiteGuard</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)]">Field Scan Kit</p>
+              <p className="text-[18px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)] transition-colors duration-200 group-hover:text-[var(--color-apple-accent)]">BiteGuard</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)] transition-colors duration-200 group-hover:text-[var(--color-apple-text)]">Field Scan Kit</p>
             </div>
           </button>
           

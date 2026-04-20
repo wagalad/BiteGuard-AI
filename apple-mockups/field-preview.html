@@ -109,6 +109,11 @@
       align-items: center;
       text-decoration: none;
       color: inherit;
+      transition: transform 180ms ease;
+    }
+
+    .brand:hover {
+      transform: translateY(-2px);
     }
 
     .brand-icon {
@@ -133,6 +138,24 @@
 
     .brand-title { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
     .brand-sub { font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--secondary); font-weight: 800; }
+
+    .brand-icon,
+    .brand-title,
+    .brand-sub {
+      transition: transform 180ms ease, color 180ms ease;
+    }
+
+    .brand:hover .brand-icon {
+      transform: scale(1.04);
+    }
+
+    .brand:hover .brand-title {
+      color: var(--accent);
+    }
+
+    .brand:hover .brand-sub {
+      color: var(--text);
+    }
 
     .btn {
       border: 0;
