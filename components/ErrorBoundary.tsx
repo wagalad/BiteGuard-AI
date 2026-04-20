@@ -33,20 +33,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      let errorMessage = "An unexpected error occurred.";
-      
-      try {
-        if (this.state.error?.message) {
-          const parsed = JSON.parse(this.state.error.message);
-          if (parsed.error && parsed.operationType) {
-            errorMessage = `Database error: ${parsed.error}. Please contact support if this persists.`;
-          }
-        }
-      } catch (e) {
-        if (this.state.error?.message && this.state.error.message.length < 100) {
-          errorMessage = this.state.error.message;
-        }
-      }
+      const errorMessage =
+        "The app hit an unexpected problem. Reload and try again. If it keeps happening, check that this deployment has the required environment variables.";
 
       return (
         <div className="min-h-[400px] flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { User, Moon, Sun, Shield, Leaf } from 'lucide-react';
-import { auth, signInWithGoogle, logout } from '../firebase';
+import { auth, signInWithGoogle, logout, isFirebaseConfigured } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 interface LayoutProps {
@@ -23,6 +23,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
     } else {
       setTheme('light');
       document.documentElement.classList.remove('dark');
+    }
+
+    if (!auth) {
+      setUser(null);
+      return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -99,19 +104,24 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
             ) : (
               <button 
                 onClick={async () => {
+                  if (!isFirebaseConfigured) {
+                    alert("Sign in is currently unavailable because Firebase is not configured for this deployment.");
+                    return;
+                  }
                   try {
                     await signInWithGoogle();
                   } catch (error: any) {
                     if (error.code === 'auth/unauthorized-domain') {
                       alert("This domain is not authorized in Firebase. Please add " + window.location.hostname + " to your authorized domains in the Firebase Console.");
                     } else if (error.code !== 'auth/popup-closed-by-user') {
-                      alert("Sign in failed: " + error.message);
+                      alert("Sign in failed. Please try again.");
                     }
                   }
                 }}
+                disabled={!isFirebaseConfigured}
                 className="bg-[var(--color-apple-accent)] hover:bg-[var(--color-apple-accent-hover)] text-white rounded-full px-4 py-1.5 text-[15px] font-medium transition-all duration-200 active:scale-95 shadow-sm border border-[rgba(255,255,255,0.1)]"
               >
-                Sign In
+                {isFirebaseConfigured ? 'Sign In' : 'Sign In Unavailable'}
               </button>
             )}
           </div>

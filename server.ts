@@ -2,19 +2,43 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
-import { fileURLToPath } from "url";
 import cors from "cors";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Permissions-Policy", "camera=(self), microphone=(), geolocation=()");
+  next();
+});
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Origin not allowed by CORS"));
+  },
+  methods: ["GET"],
+}));
 app.use(express.json());
 
 // API routes go here
