@@ -4,11 +4,18 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
   .split(",")
@@ -23,6 +30,7 @@ app.use((req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(self), microphone=(), geolocation=()");
   next();
 });
+app.use(limiter);
 app.use(cors({
   origin(origin, callback) {
     if (!origin) {
