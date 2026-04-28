@@ -16,4 +16,14 @@ export interface GeminiAnalysis extends BiteInfo {
   disclaimer: string;
 }
 
+export interface SavedScan {
+  id: string;
+  userId: string;
+  image: string;
+  imagePath?: string;
+  analysis: GeminiAnalysis;
+  timestamp?: unknown;
+  usesObjectUrl?: boolean;
+}
+
 export type LoadingStatus = 'idle' | 'loading' | 'analyzing' | 'success' | 'error';

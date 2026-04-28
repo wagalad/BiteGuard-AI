@@ -1,7 +1,8 @@
 import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, getDocs, doc, getDoc, setDoc } from 'firebase/firestore';
-import { GeminiAnalysis } from './types';
+import { getStorage, ref, uploadString, getBlob } from 'firebase/storage';
+import { GeminiAnalysis, SavedScan } from './types';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -32,6 +33,7 @@ const app = initializeFirebase();
 
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app, firebaseConfig.firestoreDatabaseId || "(default)") : null;
+export const storage = app ? getStorage(app) : null;
 export const googleProvider = new GoogleAuthProvider();
 export const isFirebaseConfigured = Boolean(app);
 
@@ -60,6 +62,26 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   };
   console.error('Firestore Error:', errInfo);
   throw new Error('Unable to complete this request right now. Please try again.');
+}
+
+function createScanStoragePath(userId: string) {
+  const uniqueId =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
+  return `scans/${userId}/${uniqueId}.jpg`;
+}
+
+async function uploadScanImage(userId: string, image: string) {
+  if (!storage) {
+    throw new Error('Firebase Storage is not initialized.');
+  }
+
+  const storagePath = createScanStoragePath(userId);
+  const imageRef = ref(storage, storagePath);
+  await uploadString(imageRef, image, 'data_url');
+  return storagePath;
 }
 
 export const signInWithGoogle = async () => {
@@ -98,15 +120,16 @@ export const signInWithGoogle = async () => {
 export const logout = () => auth ? signOut(auth) : Promise.resolve();
 
 export const saveScan = async (userId: string, image: string, analysis: GeminiAnalysis) => {
-  if (!db) {
-    console.warn("Firestore is not initialized. Scan not saved.");
+  if (!db || !storage) {
+    console.warn("Firebase persistence is not fully initialized. Scan not saved.");
     return null;
   }
   const path = 'scans';
   try {
+    const imagePath = await uploadScanImage(userId, image);
     const docRef = await addDoc(collection(db, path), {
       userId,
-      image,
+      imagePath,
       analysis,
       timestamp: serverTimestamp(),
     });
@@ -129,9 +152,34 @@ export const getUserScans = async (userId: string) => {
       orderBy('timestamp', 'desc')
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    return Promise.all(querySnapshot.docs.map(async (scanDoc): Promise<SavedScan> => {
+      const data = scanDoc.data() as Omit<SavedScan, 'id' | 'image' | 'usesObjectUrl'> & {
+        image?: string;
+      };
+
+      let image = data.image || '';
+      let usesObjectUrl = false;
+
+      if (!image && data.imagePath && storage) {
+        try {
+          const blob = await getBlob(ref(storage, data.imagePath));
+          image = URL.createObjectURL(blob);
+          usesObjectUrl = true;
+        } catch (storageError) {
+          console.error('Failed to load scan image from storage:', {
+            scanId: scanDoc.id,
+            imagePath: data.imagePath,
+            error: storageError instanceof Error ? storageError.message : String(storageError),
+          });
+        }
+      }
+
+      return {
+        id: scanDoc.id,
+        ...data,
+        image,
+        usesObjectUrl,
+      };
     }));
   } catch (error) {
     handleFirestoreError(error, OperationType.LIST, path);

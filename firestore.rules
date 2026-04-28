@@ -14,7 +14,7 @@ service cloud.firestore {
     // Document ID: Auto-generated
     // Fields:
     //   - userId: string (required) - The UID of the owner
-    //   - image: string (required) - Base64 image data
+    //   - imagePath: string (required) - Firebase Storage path for the uploaded image
     //   - analysis: map (required) - The Gemini analysis result
     //   - timestamp: timestamp (required) - Server timestamp
     //
@@ -98,13 +98,14 @@ service cloud.firestore {
     }
 
     function isValidScan(data) {
-      let allowedFields = ['userId', 'image', 'analysis', 'timestamp'];
+      let allowedFields = ['userId', 'imagePath', 'analysis', 'timestamp'];
       return data.keys().hasOnly(allowedFields) &&
              data.keys().hasAll(allowedFields) &&
              data.userId == request.auth.uid &&
-             data.image is string &&
-             data.image.size() > 100 &&
-             data.image.size() < 1048576 && // 1MB limit for base64
+             data.imagePath is string &&
+             data.imagePath.size() > 10 &&
+             data.imagePath.size() < 500 &&
+             data.imagePath.matches('^scans/' + request.auth.uid + '/[a-zA-Z0-9\\-]+\\.jpg$') &&
              isValidAnalysis(data.analysis) &&
              data.timestamp is timestamp &&
              isRecent(data.timestamp);
