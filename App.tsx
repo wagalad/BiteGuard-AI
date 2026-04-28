@@ -4,7 +4,7 @@ import * as tmImage from '@teachablemachine/image';
 import { Layout } from './components/Layout';
 import { ImageUploader } from './components/ImageUploader';
 import { ResultsSection } from './components/ResultsSection';
-import { LoadingStatus, GeminiAnalysis, SavedScan } from './types';
+import { LoadingStatus, GeminiAnalysis } from './types';
 import { ScanLine, Cpu, ShieldCheck, X, Sparkles, Clock3, Microscope, LibraryBig } from 'lucide-react';
 import { auth, saveScan, getUserScans } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [history, setHistory] = useState<SavedScan[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
 
@@ -46,16 +46,6 @@ const App: React.FC = () => {
 
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    return () => {
-      history.forEach((scan) => {
-        if (scan.usesObjectUrl) {
-          URL.revokeObjectURL(scan.image);
-        }
-      });
-    };
-  }, [history]);
 
   const loadHistory = async (uid: string) => {
     setIsHistoryLoading(true);
