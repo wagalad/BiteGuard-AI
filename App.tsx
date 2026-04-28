@@ -319,7 +319,7 @@ const App: React.FC = () => {
                   <button
                     key={scan.id}
                     onClick={() => {
-                      setImageSrc(scan.imageData);
+                      setImageSrc(scan.image);
                       setAnalysis(scan.analysis);
                       setStatus('success');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -327,7 +327,7 @@ const App: React.FC = () => {
                     className="group relative aspect-square rounded-[24px] overflow-hidden transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] block w-full border border-[var(--color-apple-border)]"
                   >
                     <img
-                      src={scan.imageData}
+                      src={scan.image}
                       alt="Past scan"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       referrerPolicy="no-referrer"
