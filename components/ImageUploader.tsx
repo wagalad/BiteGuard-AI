@@ -147,26 +147,26 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
           </div>
         </div>
       ) : (
-        <div className="glass-panel panel-shell rounded-[32px] overflow-hidden p-5 sm:p-6">
-          <div className="rounded-[28px] border border-dashed border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.26)] dark:bg-[rgba(255,255,255,0.02)] p-5 sm:p-6">
+        <div className="field-panel rounded-[32px] overflow-hidden p-5 sm:p-6">
+          <div className="rounded-[28px] border border-dashed border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="max-w-[28rem]">
                 <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-success-bg)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-apple-success-text)]">
                   <ShieldCheck size={14} />
-                  On-device image scan
+                  Bite scan intake
                 </div>
                 <h3 className="mt-4 text-[30px] sm:text-[38px] leading-[1] tracking-[-0.04em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
-                  Photograph the bite,
-                  <span className="block text-[var(--color-apple-accent)]">then let the model inspect it.</span>
+                  Start with one clear image,
+                  <span className="block text-[var(--color-apple-accent)]">then let BiteGuard read the pattern.</span>
                 </h3>
                 <p className="mt-4 text-[15px] leading-7 text-[var(--color-apple-secondary)]">
-                  Use bright, even light and keep the bite centered. The cleaner the photo, the better the pattern match.
+                  Use bright, even light, keep the bite centered, and try to avoid harsh shadow. A cleaner photo makes the result easier to trust.
                 </p>
               </div>
-              <div className="rounded-[24px] bg-[rgba(85,99,74,0.08)] dark:bg-[rgba(150,171,127,0.08)] p-4 text-[var(--color-apple-secondary)]">
+              <div className="rounded-[24px] bg-[var(--color-apple-card)] p-4 text-[var(--color-apple-secondary)]">
                 <Bug size={26} className="mb-3 text-[var(--color-apple-accent)]" />
                 <p className="text-[12px] font-bold uppercase tracking-[0.16em]">Best results</p>
-                <p className="mt-2 max-w-[13rem] text-[13px] leading-6">Single bite area, no harsh shadow, skin filling most of the frame.</p>
+                <p className="mt-2 max-w-[13rem] text-[13px] leading-6">One bite area, minimal background, skin filling most of the frame.</p>
               </div>
             </div>
 
@@ -180,10 +180,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
                   <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center">
                     <Camera size={22} strokeWidth={2} />
                   </div>
-                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Live capture</span>
+                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Fastest route</span>
                 </div>
                 <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Take photo</p>
-                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Open your camera and frame the bite directly.</p>
+                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Open the camera, frame the bite directly, and scan right away.</p>
               </button>
               
               <button 
@@ -195,17 +195,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
                   <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-success)] text-white flex items-center justify-center">
                     <ImageIcon size={22} strokeWidth={2} />
                   </div>
-                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Upload image</span>
+                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Existing photo</span>
                 </div>
                 <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Choose from library</p>
-                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Use a clear existing photo in JPG, PNG, or WebP.</p>
+                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Use a sharp saved image in JPG, PNG, or WebP.</p>
               </button>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-3 text-[12px] font-semibold text-[var(--color-apple-secondary)]">
               <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Up to 5MB</span>
               <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Auto-resized for speed</span>
-              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">No workflow changes</span>
+              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Educational guidance only</span>
             </div>
           </div>
         </div>

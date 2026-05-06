@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { User, Moon, Sun, Shield, Leaf } from 'lucide-react';
+import { User, Moon, Sun, Shield, Leaf, ScanSearch } from 'lucide-react';
 import { auth, signInWithGoogle, logout, isFirebaseConfigured } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -57,7 +57,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
       </div>
 
       <div className="sticky top-4 w-full z-50 px-4 sm:px-6 pointer-events-none flex justify-center">
-        <header className="w-full max-w-[1120px] pointer-events-auto glass-panel panel-shell rounded-[28px] px-4 sm:px-6 py-4 flex items-center justify-between shadow-[var(--shadow-apple-glass)]">
+        <header className="w-full max-w-[1120px] pointer-events-auto field-shell rounded-[28px] px-4 sm:px-6 py-4 flex items-center justify-between shadow-[var(--shadow-apple-glass)]">
           <button
             type="button"
             onClick={onHomeClick}
@@ -69,14 +69,18 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
             </div>
             <div>
               <p className="text-[18px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)] transition-colors duration-200 group-hover:text-[var(--color-apple-accent)]">BiteGuard</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)] transition-colors duration-200 group-hover:text-[var(--color-apple-text)]">Field Scan Kit</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--color-apple-secondary)] transition-colors duration-200 group-hover:text-[var(--color-apple-text)]">Field Scan Guide</p>
             </div>
           </button>
           
           <div className="flex items-center gap-4 sm:gap-6">
+            <div className="hidden md:flex items-center gap-2 rounded-full bg-[var(--color-apple-soft-surface)] px-3 py-2 text-[12px] font-semibold text-[var(--color-apple-secondary)]">
+              <ScanSearch size={14} />
+              Educational bite triage
+            </div>
             <button
               onClick={toggleTheme}
-              className="h-10 w-10 rounded-full text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-separator)] transition-colors flex items-center justify-center"
+              className="h-10 w-10 rounded-full border border-[var(--color-apple-border)] text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-separator)] transition-colors flex items-center justify-center"
               aria-label="Toggle theme"
             >
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
@@ -133,7 +137,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
       </main>
 
       <footer className="z-10 mt-auto px-4 sm:px-6 pb-6">
-        <div className="max-w-[1120px] mx-auto glass-panel panel-shell rounded-[28px] px-6 py-6">
+        <div className="max-w-[1120px] mx-auto field-shell rounded-[28px] px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-[13px] text-[var(--color-apple-secondary)]">
             <div>
               <p className="font-semibold text-[var(--color-apple-text)]">BiteGuard AI</p>

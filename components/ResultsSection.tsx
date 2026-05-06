@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GeminiAnalysis } from '../types';
 import { motion } from 'motion/react';
-import { AlertTriangle, HeartPulse, ShieldPlus, Stethoscope } from 'lucide-react';
+import { AlertTriangle, HeartPulse, ShieldPlus, Stethoscope, BadgeCheck, Siren, ShieldAlert } from 'lucide-react';
 
 interface ResultsSectionProps {
   analysis: GeminiAnalysis;
@@ -44,7 +44,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
 
   return (
     <div className="w-full">
-      <div className="glass-panel panel-shell rounded-[30px] overflow-hidden p-6 sm:p-7 mb-6">
+      <div className="field-panel rounded-[30px] overflow-hidden p-6 sm:p-7 mb-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-[40rem]">
             <p className="section-eyebrow">Scan result</p>
@@ -61,7 +61,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
             </p>
           </div>
 
-          <div className="w-full lg:max-w-[18rem] rounded-[24px] border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.24)] dark:bg-[rgba(255,255,255,0.03)] p-5">
+          <div className="w-full lg:max-w-[18rem] rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] p-5">
             <div className="flex justify-between mb-2 text-[14px] font-medium">
               <span className="text-[var(--color-apple-secondary)]">Model confidence</span>
               <span className={`font-extrabold ${style.textClass}`}>
@@ -75,6 +75,30 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
               ></div>
             </div>
             <p className="mt-3 text-[13px] font-semibold text-[var(--color-apple-secondary)]">{confidenceLabel}</p>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="rounded-[22px] bg-[var(--color-apple-success-bg)] px-4 py-4">
+            <div className="flex items-center gap-2 text-[var(--color-apple-success-text)]">
+              <BadgeCheck size={16} />
+              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Start here</p>
+            </div>
+            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">Read the likely match and compare it to what you see on your skin before acting on the rest.</p>
+          </div>
+          <div className="rounded-[22px] bg-[var(--color-apple-warning-bg)] px-4 py-4">
+            <div className="flex items-center gap-2 text-[var(--color-apple-warning-text)]">
+              <Siren size={16} />
+              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Watch closely</p>
+            </div>
+            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">Use symptoms and first-aid guidance together, not as separate isolated cues.</p>
+          </div>
+          <div className="rounded-[22px] bg-[var(--color-apple-separator)] px-4 py-4">
+            <div className="flex items-center gap-2 text-[var(--color-apple-accent)]">
+              <ShieldAlert size={16} />
+              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Escalate when needed</p>
+            </div>
+            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">If symptoms intensify or don’t match the result well, treat the scan as a clue, not a conclusion.</p>
           </div>
         </div>
       </div>
@@ -102,7 +126,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
             items: analysis.seekDoctor,
           },
         ].map((section) => (
-          <div key={section.title} className="glass-panel panel-shell rounded-[28px] overflow-hidden p-5 sm:p-6">
+          <div key={section.title} className="field-panel rounded-[28px] overflow-hidden p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-11 w-11 rounded-2xl bg-[var(--color-apple-separator)] flex items-center justify-center text-[var(--color-apple-accent)]">
                 <section.icon size={20} />
@@ -114,7 +138,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
             </div>
             <div className="grid gap-3">
               {section.items.map((item, i) => (
-                <div key={i} className="rounded-[20px] border border-[var(--color-apple-border)] bg-[rgba(255,255,255,0.25)] dark:bg-[rgba(255,255,255,0.02)] px-4 py-3.5">
+                <div key={i} className="rounded-[20px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-4 py-3.5">
                   <span className="text-[16px] font-medium leading-7 tracking-[-0.01em] text-[var(--color-apple-text)]">{item}</span>
                 </div>
               ))}

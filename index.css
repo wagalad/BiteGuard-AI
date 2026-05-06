@@ -36,6 +36,7 @@
   --shadow-apple-soft: var(--s-soft);
   --shadow-apple-lift: var(--s-lift);
   --shadow-apple-glass: var(--s-glass);
+  --color-apple-soft-surface: var(--c-soft-surface);
 
   /* Easing */
   --ease-apple-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -43,57 +44,59 @@
 }
 
 :root {
-  --c-bg: #f4efe6;
-  --c-card: rgba(252, 249, 243, 0.94);
-  --c-border: rgba(72, 56, 43, 0.11);
-  --c-accent: #55634a;
-  --c-accent-hover: #44503c;
-  --c-text: #231b15;
-  --c-secondary: rgba(35, 27, 21, 0.72);
-  --c-tertiary: rgba(35, 27, 21, 0.42);
-  --c-separator: rgba(72, 56, 43, 0.1);
-  --c-glass: rgba(252, 249, 243, 0.82);
+  --c-bg: oklch(96.8% 0.013 82);
+  --c-card: oklch(98.3% 0.01 82 / 0.92);
+  --c-soft-surface: oklch(94.4% 0.012 84 / 0.9);
+  --c-border: oklch(49% 0.018 64 / 0.16);
+  --c-accent: oklch(46% 0.057 143);
+  --c-accent-hover: oklch(40% 0.05 143);
+  --c-text: oklch(24% 0.021 52);
+  --c-secondary: oklch(39% 0.016 56 / 0.78);
+  --c-tertiary: oklch(41% 0.012 56 / 0.5);
+  --c-separator: oklch(54% 0.013 60 / 0.14);
+  --c-glass: oklch(98.2% 0.008 82 / 0.76);
 
-  --c-success: #3f7f5b;
-  --c-success-bg: rgba(63, 127, 91, 0.12);
-  --c-success-text: #2f6145;
+  --c-success: oklch(55% 0.085 150);
+  --c-success-bg: oklch(91% 0.03 148 / 0.9);
+  --c-success-text: oklch(40% 0.058 149);
 
-  --c-warning: #b97b1d;
-  --c-warning-bg: rgba(185, 123, 29, 0.14);
-  --c-warning-text: #8a5b11;
+  --c-warning: oklch(67% 0.12 72);
+  --c-warning-bg: oklch(91% 0.038 75 / 0.88);
+  --c-warning-text: oklch(52% 0.11 72);
 
-  --c-danger: #b54b3a;
-  --c-danger-bg: rgba(181, 75, 58, 0.12);
-  --c-danger-text: #8e3528;
+  --c-danger: oklch(57% 0.133 33);
+  --c-danger-bg: oklch(92% 0.028 31 / 0.86);
+  --c-danger-text: oklch(50% 0.113 29);
 
-  --s-soft: 0 1px 2px rgba(36, 24, 16, 0.05);
-  --s-lift: 0 16px 40px rgba(67, 44, 23, 0.09);
-  --s-glass: 0 12px 30px rgba(67, 44, 23, 0.08);
+  --s-soft: 0 1px 2px rgba(44, 33, 23, 0.05);
+  --s-lift: 0 22px 48px rgba(67, 47, 26, 0.11);
+  --s-glass: 0 18px 40px rgba(67, 47, 26, 0.08);
 }
 
 .dark {
-  --c-bg: #181512;
-  --c-card: rgba(34, 29, 24, 0.94);
-  --c-border: rgba(242, 228, 209, 0.1);
-  --c-accent: #96ab7f;
-  --c-accent-hover: #afc195;
-  --c-text: #f5ead9;
-  --c-secondary: rgba(245, 234, 217, 0.72);
-  --c-tertiary: rgba(245, 234, 217, 0.42);
-  --c-separator: rgba(242, 228, 209, 0.12);
-  --c-glass: rgba(34, 29, 24, 0.9);
+  --c-bg: oklch(20% 0.014 60);
+  --c-card: oklch(27% 0.015 56 / 0.94);
+  --c-soft-surface: oklch(30% 0.016 58 / 0.96);
+  --c-border: oklch(84% 0.012 82 / 0.14);
+  --c-accent: oklch(73% 0.084 143);
+  --c-accent-hover: oklch(79% 0.066 143);
+  --c-text: oklch(92% 0.014 82);
+  --c-secondary: oklch(84% 0.01 82 / 0.78);
+  --c-tertiary: oklch(80% 0.009 82 / 0.52);
+  --c-separator: oklch(80% 0.012 78 / 0.13);
+  --c-glass: oklch(26% 0.013 58 / 0.9);
 
-  --c-success: #63b487;
-  --c-success-bg: rgba(99, 180, 135, 0.16);
-  --c-success-text: #8fd5ac;
+  --c-success: oklch(76% 0.082 148);
+  --c-success-bg: oklch(33% 0.03 148 / 0.88);
+  --c-success-text: oklch(82% 0.075 148);
 
-  --c-warning: #d6a24e;
-  --c-warning-bg: rgba(214, 162, 78, 0.18);
-  --c-warning-text: #e8bc74;
+  --c-warning: oklch(78% 0.11 72);
+  --c-warning-bg: oklch(34% 0.024 73 / 0.92);
+  --c-warning-text: oklch(84% 0.09 73);
 
-  --c-danger: #d37463;
-  --c-danger-bg: rgba(211, 116, 99, 0.16);
-  --c-danger-text: #e59d8f;
+  --c-danger: oklch(76% 0.102 30);
+  --c-danger-bg: oklch(33% 0.024 30 / 0.9);
+  --c-danger-text: oklch(82% 0.092 29);
 
   --s-soft: 0 1px 2px rgba(0, 0, 0, 0.22);
   --s-lift: 0 20px 50px rgba(0, 0, 0, 0.32);
@@ -105,36 +108,58 @@
     @apply bg-[var(--color-apple-bg)] text-[var(--color-apple-text)] antialiased min-h-screen selection:bg-[var(--color-apple-accent)] selection:text-white transition-colors duration-300;
     letter-spacing: -0.01em;
     background-image:
-      radial-gradient(circle at top left, rgba(150, 171, 127, 0.14), transparent 32%),
-      radial-gradient(circle at 85% 15%, rgba(185, 123, 29, 0.1), transparent 26%),
-      linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0));
+      radial-gradient(circle at 0% 0%, rgba(109, 140, 98, 0.14), transparent 28%),
+      radial-gradient(circle at 88% 10%, rgba(196, 140, 66, 0.12), transparent 24%),
+      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0));
   }
 }
 
 @layer utilities {
-  .glass-panel {
+  .field-shell {
+    position: relative;
+    overflow: hidden;
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0)) border-box,
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0)) border-box,
       var(--color-apple-card);
-    backdrop-filter: blur(14px) saturate(125%);
-    -webkit-backdrop-filter: blur(14px) saturate(125%);
     border: 1px solid var(--color-apple-border);
     box-shadow: var(--shadow-apple-glass);
   }
 
-  .panel-shell {
+  .field-panel {
     position: relative;
     overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0)) border-box,
+      var(--color-apple-card);
+    border: 1px solid var(--color-apple-border);
+    box-shadow: var(--shadow-apple-glass);
   }
 
-  .panel-shell::before {
+  .field-panel::before,
+  .field-shell::before {
     content: "";
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(135deg, rgba(255,255,255,0.18), transparent 45%),
-      linear-gradient(0deg, rgba(0,0,0,0.02), transparent 35%);
+      linear-gradient(135deg, rgba(255,255,255,0.12), transparent 45%),
+      linear-gradient(0deg, rgba(0,0,0,0.015), transparent 35%);
     pointer-events: none;
+  }
+
+  .field-panel-hero::after {
+    content: "";
+    position: absolute;
+    right: -5rem;
+    bottom: -5rem;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(150, 171, 127, 0.2), transparent 48%),
+      radial-gradient(circle at 68% 40%, rgba(196, 140, 66, 0.22), transparent 50%);
+    pointer-events: none;
+    filter: blur(16px);
+    opacity: 0.9;
   }
 
   .section-eyebrow {
@@ -173,4 +198,14 @@
   .delay-2 { animation-delay: 120ms; }
   .delay-3 { animation-delay: 180ms; }
   .delay-4 { animation-delay: 240ms; }
+
+  .history-row {
+    container-type: inline-size;
+  }
+}
+
+@container (max-width: 19rem) {
+  .history-row {
+    grid-template-columns: 1fr;
+  }
 }
