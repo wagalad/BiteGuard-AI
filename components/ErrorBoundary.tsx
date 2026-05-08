@@ -37,20 +37,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
         "The app hit an unexpected problem. Reload and try again. If it keeps happening, check that this deployment has the required environment variables.";
 
       return (
-        <div className="min-h-[400px] flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="bg-red-100 dark:bg-red-900/30 p-4 rounded-full mb-6">
-            <AlertTriangle className="text-red-600 dark:text-red-400" size={40} />
+        <div className="field-panel rounded-[28px] p-8 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-apple-danger-bg)] text-[var(--color-apple-danger-text)]">
+            <AlertTriangle size={28} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Something went wrong</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md mx-auto">
+          <h2 className="mt-6 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">
+            Something went wrong
+          </h2>
+          <p className="mx-auto mt-3 max-w-[60ch] text-[14px] leading-6 text-[var(--color-apple-secondary)]">
             {errorMessage}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center gap-2 px-6 py-3 bg-medical-600 hover:bg-medical-700 text-white rounded-xl font-bold transition-all shadow-glow"
+            className="mx-auto mt-6 inline-flex h-10 items-center gap-2 rounded-full bg-[var(--color-apple-accent)] px-4 text-[13px] font-extrabold text-white hover:bg-[var(--color-apple-accent-hover)] transition-colors"
           >
             <RefreshCw size={18} />
-            <span>Reload Application</span>
+            <span>Reload</span>
           </button>
         </div>
       );

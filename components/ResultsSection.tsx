@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { GeminiAnalysis } from '../types';
 import { motion } from 'motion/react';
-import { AlertTriangle, HeartPulse, ShieldPlus, Stethoscope, BadgeCheck, Siren, ShieldAlert } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 interface ResultsSectionProps {
   analysis: GeminiAnalysis;
@@ -44,109 +44,75 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analysis }) => {
 
   return (
     <div className="w-full">
-      <div className="field-panel rounded-[30px] overflow-hidden p-6 sm:p-7 mb-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-[40rem]">
-            <p className="section-eyebrow">Scan result</p>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <h1 className="text-[34px] sm:text-[44px] leading-[0.95] tracking-[-0.05em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
-                {analysis.name}
-              </h1>
-              <span className={`px-3 py-1.5 rounded-full text-[13px] font-bold tracking-tight ${style.badgeClass}`}>
-                {analysis.severity.charAt(0).toUpperCase() + analysis.severity.slice(1)} risk
-              </span>
-            </div>
-            <p className="mt-4 text-[15px] leading-7 text-[var(--color-apple-secondary)]">
-              The model thinks this image most closely matches <span className="font-semibold text-[var(--color-apple-text)]">{analysis.name.toLowerCase()}</span>. Use the guidance below as an educational first pass, not a diagnosis.
-            </p>
-          </div>
+      <div className="field-panel rounded-[28px] p-6 sm:p-8">
+        <p className="section-eyebrow">Scan result</p>
 
-          <div className="w-full lg:max-w-[18rem] rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] p-5">
-            <div className="flex justify-between mb-2 text-[14px] font-medium">
-              <span className="text-[var(--color-apple-secondary)]">Model confidence</span>
-              <span className={`font-extrabold ${style.textClass}`}>
-                {(analysis.confidence * 100).toFixed(0)}%
-              </span>
-            </div>
-            <div className="h-2 bg-[var(--color-apple-separator)] rounded-full overflow-hidden">
-              <div 
-                className={`h-full rounded-full transition-all duration-1000 ease-[var(--ease-apple-smooth)] w-0 ${style.fillClass}`}
-                style={{ width: fillWidth }}
-              ></div>
-            </div>
-            <p className="mt-3 text-[13px] font-semibold text-[var(--color-apple-secondary)]">{confidenceLabel}</p>
-          </div>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <h1 className="text-balance text-[30px] leading-[1.03] tracking-[-0.04em] text-[var(--color-apple-text)] sm:text-[38px]">
+            {analysis.name}
+          </h1>
+          <span className={`rounded-full px-3 py-1.5 text-[12px] font-extrabold uppercase tracking-[0.14em] ${style.badgeClass}`}>
+            {analysis.severity.charAt(0).toUpperCase() + analysis.severity.slice(1)} risk
+          </span>
         </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-[22px] bg-[var(--color-apple-success-bg)] px-4 py-4">
-            <div className="flex items-center gap-2 text-[var(--color-apple-success-text)]">
-              <BadgeCheck size={16} />
-              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Start here</p>
+        <p className="mt-3 text-measure text-[14px] leading-6 text-[var(--color-apple-secondary)]">
+          Likely match based on the photo. Compare to your skin before acting. This is educational, not a diagnosis.
+        </p>
+
+        <div className="mt-6 vm-sep" />
+
+        <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_0.9fr] lg:items-start">
+          <div className="grid gap-2">
+            <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-tertiary)]">Confidence</div>
+            <div className="flex items-end justify-between gap-3">
+              <div className="text-[14px] font-semibold text-[var(--color-apple-secondary)]">{confidenceLabel}</div>
+              <div className={`text-[14px] font-extrabold ${style.textClass}`}>{(analysis.confidence * 100).toFixed(0)}%</div>
             </div>
-            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">Read the likely match and compare it to what you see on your skin before acting on the rest.</p>
+            <div className="h-2 overflow-hidden rounded-full bg-[var(--color-apple-separator)]">
+              <div
+                className={`h-full rounded-full transition-all duration-1000 ease-[var(--ease-apple-smooth)] w-0 ${style.fillClass}`}
+                style={{ width: fillWidth }}
+              />
+            </div>
           </div>
-          <div className="rounded-[22px] bg-[var(--color-apple-warning-bg)] px-4 py-4">
-            <div className="flex items-center gap-2 text-[var(--color-apple-warning-text)]">
-              <Siren size={16} />
-              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Watch closely</p>
-            </div>
-            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">Use symptoms and first-aid guidance together, not as separate isolated cues.</p>
-          </div>
-          <div className="rounded-[22px] bg-[var(--color-apple-separator)] px-4 py-4">
-            <div className="flex items-center gap-2 text-[var(--color-apple-accent)]">
-              <ShieldAlert size={16} />
-              <p className="text-[13px] font-extrabold uppercase tracking-[0.12em]">Escalate when needed</p>
-            </div>
-            <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-text)]">If symptoms intensify or don’t match the result well, treat the scan as a clue, not a conclusion.</p>
+
+          <div className="rounded-[18px] border border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] px-4 py-3 text-[13px] leading-6 text-[var(--color-apple-secondary)]">
+            If symptoms intensify, spread, or don’t match the result well, treat the scan as a clue and seek medical help.
           </div>
         </div>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="grid gap-5"
+        transition={{ duration: 0.45, delay: 0.08 }}
+        className="mt-6 grid gap-6"
       >
         {[
-          {
-            title: 'Common symptoms',
-            icon: HeartPulse,
-            items: analysis.symptoms,
-          },
-          {
-            title: 'First aid',
-            icon: ShieldPlus,
-            items: analysis.treatment,
-          },
-          {
-            title: 'When to seek care',
-            icon: Stethoscope,
-            items: analysis.seekDoctor,
-          },
+          { title: 'Common symptoms', items: analysis.symptoms },
+          { title: 'First aid', items: analysis.treatment },
+          { title: 'When to seek care', items: analysis.seekDoctor },
         ].map((section) => (
-          <div key={section.title} className="field-panel rounded-[28px] overflow-hidden p-5 sm:p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-11 w-11 rounded-2xl bg-[var(--color-apple-separator)] flex items-center justify-center text-[var(--color-apple-accent)]">
-                <section.icon size={20} />
-              </div>
-              <div>
-                <p className="section-eyebrow">{section.title}</p>
-                <p className="text-[14px] text-[var(--color-apple-secondary)]">Structured guidance from the matched bite profile</p>
-              </div>
+          <section key={section.title} className="field-panel rounded-[28px] p-6 sm:p-8">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-[18px] font-extrabold tracking-[-0.02em] text-[var(--color-apple-text)]">{section.title}</h2>
+              <span className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-tertiary)]">
+                {section.items.length} items
+              </span>
             </div>
-            <div className="grid gap-3">
-              {section.items.map((item, i) => (
-                <div key={i} className="rounded-[20px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-4 py-3.5">
-                  <span className="text-[16px] font-medium leading-7 tracking-[-0.01em] text-[var(--color-apple-text)]">{item}</span>
-                </div>
+            <div className="mt-5 vm-sep" />
+            <ul className="mt-5 grid gap-3">
+              {section.items.map((item) => (
+                <li key={item} className="text-[14px] leading-6 text-[var(--color-apple-secondary)]">
+                  {item}
+                </li>
               ))}
-            </div>
-          </div>
+            </ul>
+          </section>
         ))}
 
-        <div className="rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-danger-bg)] px-5 py-4 text-[var(--color-apple-danger-text)] flex items-start gap-3">
+        <div className="rounded-[20px] border border-[var(--color-apple-border)] bg-[var(--color-apple-danger-bg)] px-5 py-4 text-[var(--color-apple-danger-text)] flex items-start gap-3">
           <AlertTriangle size={18} className="mt-0.5 shrink-0" />
           <p className="text-[13px] leading-6">{analysis.disclaimer}</p>
         </div>
