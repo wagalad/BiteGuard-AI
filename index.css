@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-display: "Fraunces", Georgia, serif;
+  --font-display: var(--font-sans);
   
   /* Apple iOS Dynamic Colors */
   --color-apple-bg: var(--c-bg);
@@ -44,17 +44,18 @@
 }
 
 :root {
-  --c-bg: oklch(96.8% 0.013 82);
-  --c-card: oklch(98.3% 0.01 82 / 0.92);
-  --c-soft-surface: oklch(94.4% 0.012 84 / 0.9);
-  --c-border: oklch(49% 0.018 64 / 0.16);
-  --c-accent: oklch(46% 0.057 143);
-  --c-accent-hover: oklch(40% 0.05 143);
-  --c-text: oklch(24% 0.021 52);
-  --c-secondary: oklch(39% 0.016 56 / 0.78);
-  --c-tertiary: oklch(41% 0.012 56 / 0.5);
-  --c-separator: oklch(54% 0.013 60 / 0.14);
-  --c-glass: oklch(98.2% 0.008 82 / 0.76);
+  /* VentraMatch-clean lane: sunlit neutrals + one committed accent */
+  --c-bg: oklch(97.7% 0.008 120);
+  --c-card: oklch(99.1% 0.004 120 / 0.94);
+  --c-soft-surface: oklch(96.3% 0.007 120 / 0.9);
+  --c-border: oklch(55% 0.012 120 / 0.18);
+  --c-accent: oklch(52% 0.11 150);
+  --c-accent-hover: oklch(47% 0.105 150);
+  --c-text: oklch(22% 0.012 120);
+  --c-secondary: oklch(38% 0.01 120 / 0.78);
+  --c-tertiary: oklch(42% 0.01 120 / 0.52);
+  --c-separator: oklch(60% 0.01 120 / 0.14);
+  --c-glass: oklch(99.2% 0.004 120 / 0.76);
 
   --c-success: oklch(55% 0.085 150);
   --c-success-bg: oklch(91% 0.03 148 / 0.9);
@@ -68,23 +69,23 @@
   --c-danger-bg: oklch(92% 0.028 31 / 0.86);
   --c-danger-text: oklch(50% 0.113 29);
 
-  --s-soft: 0 1px 2px rgba(44, 33, 23, 0.05);
-  --s-lift: 0 22px 48px rgba(67, 47, 26, 0.11);
-  --s-glass: 0 18px 40px rgba(67, 47, 26, 0.08);
+  --s-soft: 0 1px 2px rgba(16, 24, 16, 0.05);
+  --s-lift: 0 22px 48px rgba(14, 26, 16, 0.1);
+  --s-glass: 0 18px 40px rgba(14, 26, 16, 0.07);
 }
 
 .dark {
-  --c-bg: oklch(20% 0.014 60);
-  --c-card: oklch(27% 0.015 56 / 0.94);
-  --c-soft-surface: oklch(30% 0.016 58 / 0.96);
-  --c-border: oklch(84% 0.012 82 / 0.14);
-  --c-accent: oklch(73% 0.084 143);
-  --c-accent-hover: oklch(79% 0.066 143);
-  --c-text: oklch(92% 0.014 82);
-  --c-secondary: oklch(84% 0.01 82 / 0.78);
-  --c-tertiary: oklch(80% 0.009 82 / 0.52);
-  --c-separator: oklch(80% 0.012 78 / 0.13);
-  --c-glass: oklch(26% 0.013 58 / 0.9);
+  --c-bg: oklch(20.5% 0.01 150);
+  --c-card: oklch(26.8% 0.01 150 / 0.94);
+  --c-soft-surface: oklch(29.6% 0.012 150 / 0.96);
+  --c-border: oklch(84% 0.008 150 / 0.14);
+  --c-accent: oklch(76% 0.125 150);
+  --c-accent-hover: oklch(81% 0.11 150);
+  --c-text: oklch(92% 0.008 150);
+  --c-secondary: oklch(84% 0.006 150 / 0.78);
+  --c-tertiary: oklch(80% 0.006 150 / 0.52);
+  --c-separator: oklch(80% 0.008 150 / 0.12);
+  --c-glass: oklch(26% 0.01 150 / 0.9);
 
   --c-success: oklch(76% 0.082 148);
   --c-success-bg: oklch(33% 0.03 148 / 0.88);
@@ -107,14 +108,20 @@
   body {
     @apply bg-[var(--color-apple-bg)] text-[var(--color-apple-text)] antialiased min-h-screen selection:bg-[var(--color-apple-accent)] selection:text-white transition-colors duration-300;
     letter-spacing: -0.01em;
-    background-image:
-      radial-gradient(circle at 0% 0%, rgba(109, 140, 98, 0.14), transparent 28%),
-      radial-gradient(circle at 88% 10%, rgba(196, 140, 66, 0.12), transparent 24%),
-      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0));
+    background-image: none;
   }
 }
 
 @layer utilities {
+  .text-measure {
+    max-width: 74ch;
+  }
+
+  .vm-sep {
+    height: 1px;
+    background: var(--color-apple-separator);
+  }
+
   .field-shell {
     position: relative;
     overflow: hidden;
