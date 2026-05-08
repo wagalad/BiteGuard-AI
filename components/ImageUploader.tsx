@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Camera, Image as ImageIcon, X, ShieldCheck, Bug, ScanSearch } from 'lucide-react';
+import { Camera, Image as ImageIcon, X, ShieldCheck } from 'lucide-react';
 
 interface ImageUploaderProps {
   onImageSelected: (imageSrc: string) => void;
@@ -116,7 +116,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
   return (
     <div className="w-full">
       {isCameraOpen ? (
-        <div className="relative rounded-[30px] overflow-hidden bg-black aspect-[3/4] md:aspect-[5/4] shadow-[var(--shadow-apple-lift)] border border-white/10">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-[24px] border border-[var(--color-apple-border)] bg-black md:aspect-[5/4]">
           <video 
             ref={videoRef} 
             autoPlay 
@@ -124,90 +124,88 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
             muted 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-x-0 top-0 p-4 z-20 bg-gradient-to-b from-black/70 to-transparent">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-md">
-              <ScanSearch size={14} />
-              Aim for one bite area in clear light
+          <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-[12px] font-semibold text-white">
+              Aim for one bite area in even light
             </div>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 p-8 flex justify-center gap-8 items-center z-20 bg-gradient-to-t from-black/80 to-transparent pt-20">
-            <button 
+            <button
               onClick={stopCamera}
-              className="bg-white/20 backdrop-blur-md p-4 rounded-full text-white hover:bg-white/30 transition-all active:scale-95 border-none cursor-pointer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/55 text-white transition-colors hover:bg-black/70 active:scale-95"
+              aria-label="Close camera"
             >
-              <X size={24} />
+              <X size={18} />
             </button>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-8 pt-20">
             <button 
               onClick={capturePhoto}
-              className="w-20 h-20 rounded-full border-[3px] border-white/80 flex items-center justify-center bg-transparent backdrop-blur-sm hover:bg-white/10 active:scale-95 transition-all cursor-pointer"
+              className="group flex h-20 w-20 items-center justify-center rounded-full border-[3px] border-white/80 bg-transparent transition-transform active:scale-95"
             >
-              <div className="w-[60px] h-[60px] bg-white rounded-full"></div>
+              <div className="h-[60px] w-[60px] rounded-full bg-white transition-transform group-active:scale-95"></div>
             </button>
-            <div className="w-14"></div>
           </div>
         </div>
       ) : (
-        <div className="field-panel rounded-[32px] overflow-hidden p-5 sm:p-6">
-          <div className="rounded-[28px] border border-dashed border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="max-w-[28rem]">
-                <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-success-bg)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-apple-success-text)]">
-                  <ShieldCheck size={14} />
-                  Bite scan intake
-                </div>
-                <h3 className="mt-4 text-[30px] sm:text-[38px] leading-[1] tracking-[-0.04em] text-[var(--color-apple-text)] [font-family:var(--font-display)]">
-                  Start with one clear image,
-                  <span className="block text-[var(--color-apple-accent)]">then let BiteGuard read the pattern.</span>
-                </h3>
-                <p className="mt-4 text-[15px] leading-7 text-[var(--color-apple-secondary)]">
-                  Use bright, even light, keep the bite centered, and try to avoid harsh shadow. A cleaner photo makes the result easier to trust.
-                </p>
+        <div className="field-panel rounded-[28px] p-6 sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="text-measure">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-apple-soft-surface)] px-3 py-1.5 text-[12px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-tertiary)]">
+                <ShieldCheck size={14} />
+                Scan intake
               </div>
-              <div className="rounded-[24px] bg-[var(--color-apple-card)] p-4 text-[var(--color-apple-secondary)]">
-                <Bug size={26} className="mb-3 text-[var(--color-apple-accent)]" />
-                <p className="text-[12px] font-bold uppercase tracking-[0.16em]">Best results</p>
-                <p className="mt-2 max-w-[13rem] text-[13px] leading-6">One bite area, minimal background, skin filling most of the frame.</p>
-              </div>
+              <h2 className="mt-4 text-[26px] leading-[1.05] tracking-[-0.04em] text-[var(--color-apple-text)] sm:text-[32px]">
+                Start with one clear image.
+              </h2>
+              <p className="mt-3 text-[14px] leading-6 text-[var(--color-apple-secondary)]">
+                Bright, even light helps. Keep the bite centered and fill the frame with skin, not background.
+              </p>
             </div>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <button 
-                onClick={startCamera}
-                disabled={isAnalyzing}
-                className="group rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-5 py-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] disabled:opacity-50"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-accent)] text-white flex items-center justify-center">
-                    <Camera size={22} strokeWidth={2} />
-                  </div>
-                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Fastest route</span>
-                </div>
-                <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Take photo</p>
-                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Open the camera, frame the bite directly, and scan right away.</p>
-              </button>
-              
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isAnalyzing}
-                className="group rounded-[24px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-5 py-5 text-left transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-apple-lift)] disabled:opacity-50"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="h-12 w-12 rounded-2xl bg-[var(--color-apple-success)] text-white flex items-center justify-center">
-                    <ImageIcon size={22} strokeWidth={2} />
-                  </div>
-                  <span className="text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--color-apple-tertiary)]">Existing photo</span>
-                </div>
-                <p className="mt-5 text-[22px] font-extrabold tracking-[-0.03em] text-[var(--color-apple-text)]">Choose from library</p>
-                <p className="mt-2 text-[14px] leading-6 text-[var(--color-apple-secondary)]">Use a sharp saved image in JPG, PNG, or WebP.</p>
-              </button>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-3 text-[12px] font-semibold text-[var(--color-apple-secondary)]">
-              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Up to 5MB</span>
-              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Auto-resized for speed</span>
-              <span className="rounded-full bg-[var(--color-apple-separator)] px-3 py-1.5">Educational guidance only</span>
+            <div className="shrink-0 rounded-[18px] border border-[var(--color-apple-border)] bg-[var(--color-apple-soft-surface)] px-4 py-3 text-[13px] leading-6 text-[var(--color-apple-secondary)]">
+              JPG, PNG, or WebP. Up to 5MB. Auto-resized for speed.
             </div>
           </div>
+
+          <div className="mt-6 vm-sep" />
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <button
+              onClick={startCamera}
+              disabled={isAnalyzing}
+              className="group flex items-center justify-between gap-4 rounded-[18px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-4 py-4 text-left transition-colors hover:bg-[var(--color-apple-soft-surface)] disabled:opacity-50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-apple-accent)] text-white">
+                  <Camera size={20} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="text-[15px] font-extrabold tracking-[-0.02em] text-[var(--color-apple-text)]">Take photo</div>
+                  <div className="mt-1 text-[13px] leading-5 text-[var(--color-apple-secondary)]">Use the camera for the cleanest capture.</div>
+                </div>
+              </div>
+              <span className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-tertiary)]">Camera</span>
+            </button>
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isAnalyzing}
+              className="group flex items-center justify-between gap-4 rounded-[18px] border border-[var(--color-apple-border)] bg-[var(--color-apple-card)] px-4 py-4 text-left transition-colors hover:bg-[var(--color-apple-soft-surface)] disabled:opacity-50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-apple-soft-surface)] text-[var(--color-apple-accent)]">
+                  <ImageIcon size={20} strokeWidth={2} />
+                </div>
+                <div>
+                  <div className="text-[15px] font-extrabold tracking-[-0.02em] text-[var(--color-apple-text)]">Choose from library</div>
+                  <div className="mt-1 text-[13px] leading-5 text-[var(--color-apple-secondary)]">Use a sharp saved image.</div>
+                </div>
+              </div>
+              <span className="text-[12px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-apple-tertiary)]">Upload</span>
+            </button>
+          </div>
+
+          <p className="mt-5 text-[13px] leading-6 text-[var(--color-apple-tertiary)]">
+            Educational guidance only. If symptoms escalate or feel urgent, seek medical care.
+          </p>
         </div>
       )}
 
