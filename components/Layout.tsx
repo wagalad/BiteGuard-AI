@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { User, Moon, Sun, Shield, Leaf } from 'lucide-react';
+import { User, Moon, Sun, Leaf } from 'lucide-react';
+import { BiteGuardLogo } from './BiteGuardLogo';
 import { auth, signInWithGoogle, logout, isFirebaseConfigured } from '../firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -59,7 +60,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
               aria-label="Go to home screen"
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-apple-accent)] text-white shadow-[var(--shadow-apple-soft)]">
-                <Shield size={18} strokeWidth={2.2} />
+                <BiteGuardLogo size={22} />
               </div>
               <div className="leading-tight">
                 <div className="text-[14px] font-extrabold tracking-[-0.02em] text-[var(--color-apple-text)] group-hover:text-[var(--color-apple-accent)] transition-colors">
@@ -75,9 +76,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, onHomeClick }) => {
               <button
                 onClick={toggleTheme}
                 className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-apple-border)] text-[var(--color-apple-secondary)] hover:text-[var(--color-apple-text)] hover:bg-[var(--color-apple-soft-surface)] transition-colors"
-                aria-label="Toggle theme"
+                aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
               >
-                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                {theme === 'light' ? <Moon size={18} aria-hidden /> : <Sun size={18} aria-hidden />}
               </button>
 
               {user ? (

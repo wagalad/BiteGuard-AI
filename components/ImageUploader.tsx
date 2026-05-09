@@ -52,7 +52,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, width, height);
-          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
           onImageSelected(resizedDataUrl);
         }
       };
@@ -106,7 +106,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.drawImage(videoRef.current, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         onImageSelected(dataUrl);
         stopCamera();
       }
@@ -126,7 +126,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
           />
           <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-[12px] font-semibold text-white">
-              Aim for one bite area in even light
+              2–3 inches around the bite · even light · no flash
             </div>
             <button
               onClick={stopCamera}
@@ -139,6 +139,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
           <div className="absolute bottom-0 left-0 right-0 z-20 flex justify-center pb-8 pt-20">
             <button 
               onClick={capturePhoto}
+              aria-label="Capture photo"
               className="group flex h-20 w-20 items-center justify-center rounded-full border-[3px] border-white/80 bg-transparent transition-transform active:scale-95"
             >
               <div className="h-[60px] w-[60px] rounded-full bg-white transition-transform group-active:scale-95"></div>
