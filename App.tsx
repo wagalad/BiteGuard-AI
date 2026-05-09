@@ -182,7 +182,7 @@ const App: React.FC = () => {
           >
             <div className="field-panel rounded-[20px] p-6 sm:p-8">
               <p className="section-eyebrow">Bite identification</p>
-              <h1 className="mt-3 text-balance text-[38px] leading-[1.03] tracking-[-0.05em] text-[var(--color-apple-text)] sm:text-[48px]">
+              <h1 className="mt-3 text-balance text-[38px] font-extrabold leading-[1.03] tracking-[-0.05em] text-[var(--color-apple-text)] sm:text-[48px]">
                 Identify a bite. Get clear next steps.
               </h1>
               <p className="mt-3 text-[15px] leading-6 text-[var(--color-apple-secondary)]">

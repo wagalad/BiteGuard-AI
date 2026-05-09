@@ -154,7 +154,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelected, i
                 <ShieldCheck size={14} />
                 Scan intake
               </div>
-              <h2 className="mt-4 text-[26px] leading-[1.05] tracking-[-0.04em] text-[var(--color-apple-text)] sm:text-[32px]">
+              <h2 className="mt-4 text-[26px] font-extrabold leading-[1.05] tracking-[-0.04em] text-[var(--color-apple-text)] sm:text-[32px]">
                 Start with one clear image.
               </h2>
               <p className="mt-3 text-[14px] leading-6 text-[var(--color-apple-secondary)]">
